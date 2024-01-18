@@ -1,0 +1,10 @@
+
+**/settings/Mainnet.toml
+**/settings/Testnet.toml
+.cache/**
+history.txt
+
+/coverage/
+coverage.lcov
+
+.vscode
