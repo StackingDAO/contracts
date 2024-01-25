@@ -1,5 +1,5 @@
 ;; @contract Stacking DAO Genesis NFT
-;; @version 1
+;; @version 2
 ;;
 ;; Stacking DAO Genesis NFT minter
 ;; 
@@ -23,13 +23,13 @@
 ;; Variables
 ;;-------------------------------------
 
-(define-data-var cycle-end-block uint u135418)
+(define-data-var cycle-end-block uint u133737)
 
 ;;-------------------------------------
 ;; Getters
 ;;-------------------------------------
 
-;; If people held at least 100 stSTX throughout cycle 74/75, they can claim a Stacking DAO Genesis NFT
+;; If people held at least 100 stSTX throughout cycle 74, they can claim a Stacking DAO Genesis NFT
 (define-read-only (can-claim (account principal))
   (let (
     (balances (contract-call? .block-info-v1 get-user-ststx-at-block account (var-get cycle-end-block)))
