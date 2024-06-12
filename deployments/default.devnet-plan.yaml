@@ -9,18 +9,10 @@ plan:
     - id: 0
       transactions:
         - requirement-publish:
-            contract-id: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait
-            remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            remap-principals:
-              SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 4680
-            path: "./.cache/requirements/SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.clar"
-            clarity-version: 1
-        - requirement-publish:
             contract-id: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard
-            remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            remap-sender: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
             remap-principals:
-              SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+              SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
             cost: 8400
             path: "./.cache/requirements/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.clar"
             clarity-version: 1
@@ -28,228 +20,478 @@ plan:
     - id: 1
       transactions:
         - requirement-publish:
-            contract-id: SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.commission-trait
-            remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            remap-principals:
-              SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 700
-            path: "./.cache/requirements/SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.commission-trait.clar"
-            clarity-version: 1
-        - requirement-publish:
             contract-id: SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1
-            remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            remap-sender: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
             remap-principals:
-              SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+              SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
             cost: 2990
             path: "./.cache/requirements/SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1.clar"
             clarity-version: 1
       epoch: "2.05"
     - id: 2
       transactions:
-        - contract-publish:
-            contract-name: staking-trait-v1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 1260
-            path: contracts/staking-trait-v1.clar
-            anchor-block-only: true
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.sip-010-trait-ft-standard
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 8690
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.sip-010-trait-ft-standard.clar"
             clarity-version: 2
-        - contract-publish:
-            contract-name: commission-trait-v1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 2100
-            path: contracts/commission-trait-v1.clar
-            anchor-block-only: true
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.lp-trait
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 2920
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.lp-trait.clar"
             clarity-version: 2
-        - contract-publish:
-            contract-name: commission-trait
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 2100
-            path: contracts/commission-trait.clar
-            anchor-block-only: true
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-1
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 545270
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-1.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-1
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 254360
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-1.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 541050
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-2
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 252690
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-2.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-1
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 27190
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-1.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2
+            remap-sender: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            remap-principals:
+              SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+            cost: 25790
+            path: "./.cache/requirements/SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait
+            remap-sender: ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC
+            remap-principals:
+              SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH: ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC
+            cost: 3340
+            path: "./.cache/requirements/SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-dao-token-trait-v1
+            remap-sender: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            remap-principals:
+              ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            cost: 2860
+            path: "./.cache/requirements/ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-dao-token-trait-v1.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-token
+            remap-sender: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            remap-principals:
+              ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            cost: 28710
+            path: "./.cache/requirements/ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-token.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-dao
+            remap-sender: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            remap-principals:
+              ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            cost: 179640
+            path: "./.cache/requirements/ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-dao.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-trait-v1-1
+            remap-sender: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            remap-principals:
+              ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            cost: 3270
+            path: "./.cache/requirements/ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-trait-v1-1.clar"
+            clarity-version: 2
+        - requirement-publish:
+            contract-id: ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-v1-1
+            remap-sender: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            remap-principals:
+              ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ: ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+            cost: 26900
+            path: "./.cache/requirements/ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-v1-1.clar"
             clarity-version: 2
         - contract-publish:
             contract-name: dao
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 36520
-            path: contracts/dao.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: commission-v1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 17960
-            path: contracts/commission-v1.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: pox-3-mock
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 700460
-            path: contracts/tests/pox-3-mock.clar
+            cost: 46300
+            path: contracts/core/dao.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
             contract-name: reserve-trait-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 6340
-            path: contracts/reserve-trait-v1.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: ststx-token
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 19820
-            path: contracts/ststx-token.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: ststx-withdraw-nft
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 58610
-            path: contracts/ststx-withdraw-nft.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: stacking-dao-core-v1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 99750
-            path: contracts/stacking-dao-core-v1.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: fake-reserve
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 28870
-            path: contracts/tests/fake-reserve.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: governance-v0
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 3360
-            path: contracts/governance-v0.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: marketplace-commission
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 1490
-            path: contracts/tests/marketplace-commission.clar
+            path: contracts/version-1/reserve-trait-v1.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
             contract-name: reserve-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 30460
-            path: contracts/reserve-v1.clar
+            cost: 33250
+            path: contracts/version-1/reserve-v1.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: stacker-1
+            contract-name: sip-010-trait-ft-standard
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-1.clar
+            cost: 8400
+            path: contracts/helpers/sip-010-trait-ft-standard.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: stacker-10
+            contract-name: ststx-token
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-10.clar
+            cost: 21680
+            path: contracts/core/ststx-token.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: stacker-2
+            contract-name: commission-trait
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-2.clar
+            cost: 700
+            path: contracts/helpers/commission-trait.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: stacker-3
+            contract-name: staking-trait-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-3.clar
+            cost: 1310
+            path: contracts/version-1/staking-trait-v1.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: stacker-4
+            contract-name: commission-trait-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-4.clar
+            cost: 2100
+            path: contracts/version-1/commission-trait-v1.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: stacker-5
+            contract-name: pox-3-mock
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-5.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: stacker-6
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-6.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: stacker-7
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-7.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: stacker-8
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-8.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: stacker-9
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 63580
-            path: contracts/stacker-9.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
-            contract-name: sdao-token
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 46750
-            path: contracts/sdao-token.clar
+            cost: 709610
+            path: contracts/tests/pox-3-mock.clar
             anchor-block-only: true
             clarity-version: 2
       epoch: "2.4"
     - id: 3
       transactions:
         - contract-publish:
+            contract-name: commission-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 31460
+            path: contracts/version-1/commission-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: pox-4-mock
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 667910
+            path: contracts/tests/pox-4-mock.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: nft-trait
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 4680
+            path: contracts/helpers/nft-trait.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: ststx-withdraw-nft
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 61570
+            path: contracts/core/ststx-withdraw-nft.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-dao-core-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 101680
+            path: contracts/version-1/stacking-dao-core-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: data-core-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 39080
+            path: contracts/version-2/data-core-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: data-direct-stacking-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 35060
+            path: contracts/version-2/data-direct-stacking-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: data-pools-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 38810
+            path: contracts/version-2/data-pools-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: rewards-trait-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 1360
+            path: contracts/version-2/rewards-trait-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-delegate-trait-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 5630
+            path: contracts/version-2/stacking-delegate-trait-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: delegates-handler-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 99900
+            path: contracts/version-2/delegates-handler-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: direct-helpers-trait-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 3760
+            path: contracts/version-2/direct-helpers-trait-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: protocol-trait-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 1430
+            path: contracts/version-2/protocol-trait-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: direct-helpers-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 105080
+            path: contracts/version-2/direct-helpers-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: governance-v0
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 3490
+            path: contracts/tests/governance-v0.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: marketplace-commission
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 1070
+            path: contracts/tests/marketplace-commission.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: pox-fast-pool-v2-mock
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 196200
+            path: contracts/tests/pox-fast-pool-v2-mock.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: protocol-arkadiko-mock
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 10030
+            path: contracts/tests/protocol-arkadiko-mock.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: protocol-arkadiko-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 5230
+            path: contracts/version-2/protocol-arkadiko-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: protocol-bitflow-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 13040
+            path: contracts/version-2/protocol-bitflow-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+      epoch: "2.4"
+    - id: 4
+      transactions:
+        - contract-publish:
+            contract-name: sdao-token
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 20250
+            path: contracts/version-3/sdao-token.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
             contract-name: staking-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 82410
-            path: contracts/staking-v1.clar
+            cost: 91080
+            path: contracts/version-3/staking-v1.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: strategy-v0
+            contract-name: rewards-v2
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 117650
-            path: contracts/strategy-v0.clar
+            cost: 47730
+            path: contracts/version-2/rewards-v2.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: strategy-v1
+            contract-name: stacking-dao-core-v2
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 203680
-            path: contracts/strategy-v1.clar
+            cost: 96700
+            path: contracts/version-2/stacking-dao-core-v2.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: tax-v1
+            contract-name: stacking-delegate-1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 33620
-            path: contracts/tax-v1.clar
+            cost: 46360
+            path: contracts/version-2/stacking-delegate-1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-delegate-1-2
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 46360
+            path: contracts/version-2/stacking-delegate-1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-delegate-1-3
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 46360
+            path: contracts/version-2/stacking-delegate-1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-delegate-2-1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 46360
+            path: contracts/version-2/stacking-delegate-1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-delegate-2-2
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 46360
+            path: contracts/version-2/stacking-delegate-1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-delegate-2-3
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 46360
+            path: contracts/version-2/stacking-delegate-1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: stacking-pool-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 138720
+            path: contracts/version-2/stacking-pool-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+      epoch: "2.4"
+    - id: 5
+      transactions:
+        - contract-publish:
+            contract-name: staking-v0
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 4350
+            path: contracts/version-1/staking-v0.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: strategy-v4
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 40070
+            path: contracts/version-2/strategy-v4.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: strategy-v3-algo-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 85400
+            path: contracts/version-2/strategy-v3-algo-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: strategy-v3-delegates-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 30290
+            path: contracts/version-2/strategy-v3-delegates-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: strategy-v3-pools-v1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 48880
+            path: contracts/version-2/strategy-v3-pools-v1.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: strategy-v3
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 100000
+            path: contracts/version-2/strategy-v3.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: swap
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 501160
+            path: contracts/tests/swap.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: swap-lp-token
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 23920
+            path: contracts/tests/swap-lp-token.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: wstx-token
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 33660
+            path: contracts/tests/wstx-token.clar
             anchor-block-only: true
             clarity-version: 2
       epoch: "2.4"

@@ -7,190 +7,435 @@ telemetry = true
 cache_dir = "./.cache"
 
 # ------------------------------
-# Mocks
+# Mainnet Contracts
 # ------------------------------
+
+[[project.requirements]]
+contract_id = "SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.pool-reserve-data"
 
 [[project.requirements]]
 contract_id = "SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1"
 
+
 [[project.requirements]]
 contract_id = "SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait"
 
+
 [[project.requirements]]
-contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-1"
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2"
 
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-1"
 
 [[project.requirements]]
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2"
+
+[[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-1"
 
+[[project.requirements]]
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2"
+
+[[project.requirements]]
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2"
+
+[[project.requirements]]
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-2"
+
+[[project.requirements]]
+contract_id = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-vaults-data-v1-1"
+
+[[project.requirements]]
+contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.ststx-aeusdc"
+
+[[project.requirements]]
+contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.univ2-core"
+
+[[project.requirements]]
+contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.farming-ststx-aeusdc-core"
+
+[[project.requirements]]
+contract_id = "SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6.token-ststx-earn-v1"
+
+[[project.requirements]]
+contract_id = "SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6.vault-ststx-earn-v1"
+
+[[project.requirements]]
+contract_id = "SP000000000000000000002Q6VF78.pox-4"
+
 # ------------------------------
-# Protocol
+# Core
 # ------------------------------
 
-[contracts.sip-010-trait-ft-standard]
-path = "contracts/sip-010-trait-ft-standard.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.nft-trait]
-path = "contracts/nft-trait.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.commission-trait]
-path = "contracts/commission-trait.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.reserve-trait-v1]
-path = "contracts/reserve-trait-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.commission-trait-v1]
-path = "contracts/commission-trait-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.staking-trait-v1]
-path = "contracts/staking-trait-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.ststx-withdraw-nft]
-path = "contracts/ststx-withdraw-nft.clar"
+[contracts.dao]
+path = "contracts/core/dao.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.ststx-token]
-path = "contracts/ststx-token.clar"
+path = "contracts/core/ststx-token.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.sdao-token]
-path = "contracts/sdao-token.clar"
+[contracts.ststx-withdraw-nft]
+path = "contracts/core/ststx-withdraw-nft.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.reserve-v1]
-path = "contracts/reserve-v1.clar"
-clarity_version = 2
-epoch = 2.4
 
-[contracts.stacking-dao-core-v1]
-path = "contracts/stacking-dao-core-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.tax-v1]
-path = "contracts/tax-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.commission-v1]
-path = "contracts/commission-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-1]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-2]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-3]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-4]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-5]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-6]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-7]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-8]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-9]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-10]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.dao]
-path = "contracts/dao.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.strategy-v0]
-path = "contracts/strategy-v0.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.strategy-v1]
-path = "contracts/strategy-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.staking-v0]
-path = "contracts/staking-v0.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.staking-v1]
-path = "contracts/staking-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.rewards-job-v1]
-path = "contracts/rewards-job-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.return-stx-job-v1]
-path = "contracts/return-stx-job-v1.clar"
-clarity_version = 2
-epoch = 2.4
+# ------------------------------
+# Genesis NFT
+# ------------------------------
 
 [contracts.stacking-dao-genesis-nft-minter]
-path = "contracts/stacking-dao-genesis-nft-minter.clar"
+path = "contracts/genesis-nft/stacking-dao-genesis-nft-minter.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-dao-genesis-nft]
-path = "contracts/stacking-dao-genesis-nft.clar"
+path = "contracts/genesis-nft/stacking-dao-genesis-nft.clar"
 clarity_version = 2
 epoch = 2.4
 
+
+# ------------------------------
+# Helpers
+# ------------------------------
+
 [contracts.block-info-v1]
-path = "contracts/block-info-v1.clar"
+path = "contracts/helpers/block-info-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-helper-v2]
+path = "contracts/block-info-helper-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v5]
+path = "contracts/block-info-v5.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v6]
+path = "contracts/block-info-v6.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v8]
+path = "contracts/block-info-v8.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v10]
+path = "contracts/block-info-v10.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v11]
+path = "contracts/block-info-v11.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v17]
+path = "contracts/block-info-v17.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-trait]
+path = "contracts/helpers/commission-trait.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sip-010-trait-ft-standard]
+path = "contracts/helpers/sip-010-trait-ft-standard.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.nft-trait]
+path = "contracts/helpers/nft-trait.clar"
+clarity_version = 2
+epoch = 2.4
+
+
+# ------------------------------
+# Keeper Jobs
+# ------------------------------
+
+[contracts.rewards-job-v1]
+path = "contracts/keeper-jobs/rewards-job-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.return-stx-job-v1]
+path = "contracts/keeper-jobs/return-stx-job-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.tax-v1]
+path = "contracts/keeper-jobs/tax-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+
+# ------------------------------
+# Version 1
+# ------------------------------
+
+[contracts.reserve-trait-v1]
+path = "contracts/version-1/reserve-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-trait-v1]
+path = "contracts/version-1/commission-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.staking-trait-v1]
+path = "contracts/version-1/staking-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.reserve-v1]
+path = "contracts/version-1/reserve-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-v1]
+path = "contracts/version-1/stacking-dao-core-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-v1]
+path = "contracts/version-1/commission-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v0]
+path = "contracts/version-1/strategy-v0.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.staking-v0]
+path = "contracts/version-1/staking-v0.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ------------------------------
+# Version 1 - Stackers
+# ------------------------------
+
+[contracts.stacker-1]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-2]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-3]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-4]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-5]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-6]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-7]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-8]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-9]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-10]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+
+# ------------------------------
+# Version 2
+# ------------------------------
+
+[contracts.stacking-delegate-trait-v1]
+path = "contracts/version-2/stacking-delegate-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.rewards-trait-v1]
+path = "contracts/version-2/rewards-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.protocol-trait-v1]
+path = "contracts/version-2/protocol-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.direct-helpers-trait-v1]
+path = "contracts/version-2/direct-helpers-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-v2]
+path = "contracts/version-2/commission-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-pool-v1]
+path = "contracts/version-2/stacking-pool-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-pool-signer-v1]
+path = "contracts/version-2/stacking-pool-signer-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-pool-payout-v1]
+path = "contracts/version-2/stacking-pool-payout-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v4]
+path = "contracts/version-2/strategy-v4.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-v2]
+path = "contracts/version-2/stacking-dao-core-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.data-core-v1]
+path = "contracts/version-2/data-core-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.data-pools-v1]
+path = "contracts/version-2/data-pools-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.data-direct-stacking-v1]
+path = "contracts/version-2/data-direct-stacking-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.rewards-v2]
+path = "contracts/version-2/rewards-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.direct-helpers-v1]
+path = "contracts/version-2/direct-helpers-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.protocol-arkadiko-v1]
+path = "contracts/version-2/protocol-arkadiko-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.protocol-bitflow-v1]
+path = "contracts/version-2/protocol-bitflow-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v3-pools-v1]
+path = "contracts/version-2/strategy-v3-pools-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v3-delegates-v1]
+path = "contracts/version-2/strategy-v3-delegates-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v3-algo-v1]
+path = "contracts/version-2/strategy-v3-algo-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v3]
+path = "contracts/version-2/strategy-v3.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.delegates-handler-v1]
+path = "contracts/version-2/delegates-handler-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ------------------------------
+# Version 2 - Delegates
+# ------------------------------
+
+[contracts.stacking-delegate-1-1]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-1-2]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-1-3]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-2-1]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-2-2]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-2-3]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ------------------------------
+# Version 3
+# ------------------------------
+
+[contracts.sdao-token]
+path = "contracts/version-3/sdao-token.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.staking-v1]
+path = "contracts/version-3/staking-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -223,8 +468,38 @@ path = "contracts/tests/pox-3-mock.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.pox-4-mock]
+path = "contracts/tests/pox-4-mock.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.protocol-arkadiko-mock]
+path = "contracts/tests/protocol-arkadiko-mock.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.fake-reserve]
 path = "contracts/tests/fake-reserve.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-direct-helpers]
+path = "contracts/version-2/direct-helpers-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-stacking-delegate]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-rewards]
+path = "contracts/version-2/rewards-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-protocol]
+path = "contracts/tests/fake-protocol.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -233,3 +508,7 @@ path = "contracts/tests/marketplace-commission.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.pox-fast-pool-v2-mock]
+path = "contracts/tests/pox-fast-pool-v2-mock.clar"
+clarity_version = 2
+epoch = 2.4
