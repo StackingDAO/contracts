@@ -1,11 +1,17 @@
-import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
+import {
+  Account,
+  Chain,
+  Clarinet,
+  Tx,
+  types,
+} from "https://deno.land/x/clarinet/index.ts";
 import { qualifiedName } from "../wrappers/tests-utils.ts";
-qualifiedName("")
+qualifiedName("");
 
-import { StStxWithdrawNft } from '../wrappers/ststx-withdraw-nft-helpers.ts';
+import { StStxWithdrawNft } from "../wrappers/ststx-withdraw-nft-helpers.ts";
 
 //-------------------------------------
-// Getters 
+// Getters
 //-------------------------------------
 
 Clarinet.test({
@@ -19,18 +25,18 @@ Clarinet.test({
     call.result.expectAscii("ipfs://");
 
     call = await stStxWithdrawNft.getLastTokenId();
-    call.result.expectOk().expectUint(0);
+    call.result.expectOk().expectUint(100000);
 
     call = await stStxWithdrawNft.getOwner(69);
     call.result.expectOk().expectNone();
 
     call = await stStxWithdrawNft.getTokenUri(420);
     call.result.expectOk().expectSome().expectAscii("ipfs://420.json");
-  }
+  },
 });
 
 //-------------------------------------
-// Mint / Burn 
+// Mint / Burn
 //-------------------------------------
 
 Clarinet.test({
@@ -42,29 +48,32 @@ Clarinet.test({
     let stStxWithdrawNft = new StStxWithdrawNft(chain, deployer);
 
     let call = await stStxWithdrawNft.getLastTokenId();
-    call.result.expectOk().expectUintWithDecimals(0);
+    call.result.expectOk().expectUint(100000);
 
     call = await stStxWithdrawNft.getOwner(0);
     call.result.expectOk().expectNone();
 
-    let result = await stStxWithdrawNft.mintForProtocol(deployer, wallet_1.address);
+    let result = await stStxWithdrawNft.mintForProtocol(
+      deployer,
+      wallet_1.address
+    );
     result.expectOk().expectBool(true);
 
     call = await stStxWithdrawNft.getLastTokenId();
-    call.result.expectOk().expectUint(1);
+    call.result.expectOk().expectUint(100000 + 1);
 
-    call = await stStxWithdrawNft.getOwner(0);
+    call = await stStxWithdrawNft.getOwner(100000);
     call.result.expectOk().expectSome().expectPrincipal(wallet_1.address);
 
-    result = await stStxWithdrawNft.burnForProtocol(deployer, 0);
+    result = await stStxWithdrawNft.burnForProtocol(deployer, 100000);
     result.expectOk().expectBool(true);
 
     call = await stStxWithdrawNft.getLastTokenId();
-    call.result.expectOk().expectUint(1);
+    call.result.expectOk().expectUint(100000 + 1);
 
-    call = await stStxWithdrawNft.getOwner(0);
+    call = await stStxWithdrawNft.getOwner(100000);
     call.result.expectOk().expectNone();
-  }
+  },
 });
 
 //-------------------------------------
@@ -83,7 +92,10 @@ Clarinet.test({
     let call = await stStxWithdrawNft.getBalance(wallet_1.address);
     call.result.expectUint(0);
 
-    let result = await stStxWithdrawNft.mintForProtocol(deployer, wallet_1.address);
+    let result = await stStxWithdrawNft.mintForProtocol(
+      deployer,
+      wallet_1.address
+    );
     result.expectOk().expectBool(true);
 
     call = await stStxWithdrawNft.getBalance(wallet_1.address);
@@ -92,7 +104,11 @@ Clarinet.test({
     call = await stStxWithdrawNft.getBalance(wallet_2.address);
     call.result.expectUint(0);
 
-    result = await stStxWithdrawNft.transfer(wallet_1, 0, wallet_2.address);
+    result = await stStxWithdrawNft.transfer(
+      wallet_1,
+      100000,
+      wallet_2.address
+    );
     result.expectOk().expectBool(true);
 
     call = await stStxWithdrawNft.getBalance(wallet_1.address);
@@ -102,11 +118,11 @@ Clarinet.test({
     call.result.expectUint(1);
 
     call = await stStxWithdrawNft.getLastTokenId();
-    call.result.expectOk().expectUint(1);
+    call.result.expectOk().expectUint(100000 + 1);
 
-    call = await stStxWithdrawNft.getOwner(0);
+    call = await stStxWithdrawNft.getOwner(100000);
     call.result.expectOk().expectSome().expectPrincipal(wallet_2.address);
-  }
+  },
 });
 
 //-------------------------------------
@@ -122,43 +138,52 @@ Clarinet.test({
 
     let stStxWithdrawNft = new StStxWithdrawNft(chain, deployer);
 
-    let result = await stStxWithdrawNft.mintForProtocol(deployer, wallet_1.address);
+    let result = await stStxWithdrawNft.mintForProtocol(
+      deployer,
+      wallet_1.address
+    );
     result.expectOk().expectBool(true);
 
-    result = await stStxWithdrawNft.listInUstx(wallet_1, 0, 10);
+    result = await stStxWithdrawNft.listInUstx(wallet_1, 100000, 10);
     result.expectOk().expectBool(true);
 
-    let call = await stStxWithdrawNft.getListingInUstx(0);
-    call.result.expectSome().expectTuple()["commission"].expectPrincipal(qualifiedName("marketplace-commission"));
+    let call = await stStxWithdrawNft.getListingInUstx(100000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["commission"].expectPrincipal(qualifiedName("marketplace-commission"));
     call.result.expectSome().expectTuple()["price"].expectUintWithDecimals(10);
 
     // Can not transfer while listed
-    result = await stStxWithdrawNft.transfer(wallet_1, 0, wallet_2.address);
+    result = await stStxWithdrawNft.transfer(
+      wallet_1,
+      100000,
+      wallet_2.address
+    );
     result.expectErr().expectUint(1106);
 
-    result = await stStxWithdrawNft.unlistInUstx(wallet_1, 0);
+    result = await stStxWithdrawNft.unlistInUstx(wallet_1, 100000);
     result.expectOk().expectBool(true);
 
-    call = await stStxWithdrawNft.getListingInUstx(0);
+    call = await stStxWithdrawNft.getListingInUstx(100000);
     call.result.expectNone();
 
-    result = await stStxWithdrawNft.listInUstx(wallet_1, 0, 20);
+    result = await stStxWithdrawNft.listInUstx(wallet_1, 100000, 20);
     result.expectOk().expectBool(true);
 
-    result = await stStxWithdrawNft.buyInUstx(deployer, 0);
+    result = await stStxWithdrawNft.buyInUstx(deployer, 100000);
     result.expectOk().expectBool(true);
 
-    call = await stStxWithdrawNft.getListingInUstx(0);
+    call = await stStxWithdrawNft.getListingInUstx(100000);
     call.result.expectNone();
 
     call = await stStxWithdrawNft.getBalance(deployer.address);
     call.result.expectUint(1);
-
-  }
+  },
 });
 
 //-------------------------------------
-// Admin 
+// Admin
 //-------------------------------------
 
 Clarinet.test({
@@ -182,11 +207,11 @@ Clarinet.test({
 
     call = await stStxWithdrawNft.getTokenUri(420);
     call.result.expectOk().expectSome().expectAscii("ipfs://123/420.json");
-  }
+  },
 });
 
 //-------------------------------------
-// Error 
+// Error
 //-------------------------------------
 
 Clarinet.test({
@@ -198,18 +223,26 @@ Clarinet.test({
 
     let stStxWithdrawNft = new StStxWithdrawNft(chain, deployer);
 
-    let result = await stStxWithdrawNft.mintForProtocol(deployer, deployer.address);
+    let result = await stStxWithdrawNft.mintForProtocol(
+      deployer,
+      deployer.address
+    );
     result.expectOk().expectBool(true);
 
     let block = chain.mineBlock([
-      Tx.contractCall("ststx-withdraw-nft", "transfer", [
-        types.uint(0),
-        types.principal(wallet_1.address),
-        types.principal(wallet_2.address),
-      ], deployer.address)
+      Tx.contractCall(
+        "ststx-withdraw-nft",
+        "transfer",
+        [
+          types.uint(0),
+          types.principal(wallet_1.address),
+          types.principal(wallet_2.address),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(1101);
-  }
+  },
 });
 
 Clarinet.test({
@@ -223,11 +256,11 @@ Clarinet.test({
 
     let result = await stStxWithdrawNft.burnForProtocol(deployer, 10);
     result.expectErr().expectUint(1107);
-  }
+  },
 });
 
 //-------------------------------------
-// Access 
+// Access
 //-------------------------------------
 
 Clarinet.test({
@@ -238,7 +271,10 @@ Clarinet.test({
 
     let stStxWithdrawNft = new StStxWithdrawNft(chain, deployer);
 
-    let result = await stStxWithdrawNft.mintForProtocol(deployer, deployer.address);
+    let result = await stStxWithdrawNft.mintForProtocol(
+      deployer,
+      deployer.address
+    );
     result.expectOk().expectBool(true);
 
     result = await stStxWithdrawNft.setBaseUri(wallet_1, "test-uri");
@@ -247,7 +283,7 @@ Clarinet.test({
     result = await stStxWithdrawNft.mintForProtocol(wallet_1, wallet_1.address);
     result.expectErr().expectUint(20003);
 
-    result = await stStxWithdrawNft.burnForProtocol(wallet_1, 0);
+    result = await stStxWithdrawNft.burnForProtocol(wallet_1, 100000);
     result.expectErr().expectUint(20003);
-  }
+  },
 });

@@ -16,10 +16,8 @@ contract_id = "SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.pool-reserve-data"
 [[project.requirements]]
 contract_id = "SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1"
 
-
 [[project.requirements]]
 contract_id = "SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait"
-
 
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2"
@@ -32,9 +30,6 @@ contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2
 
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-1"
-
-[[project.requirements]]
-contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2"
 
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2"
@@ -63,6 +58,9 @@ contract_id = "SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6.vault-ststx-earn-v1"
 [[project.requirements]]
 contract_id = "SP000000000000000000002Q6VF78.pox-4"
 
+[[project.requirements]]
+contract_id = "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd012-redemption-nyc"
+
 # ------------------------------
 # Core
 # ------------------------------
@@ -82,6 +80,10 @@ path = "contracts/core/ststx-withdraw-nft.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.ststx-withdraw-nft-v2]
+path = "contracts/core/ststx-withdraw-nft-v2.clar"
+clarity_version = 2
+epoch = 2.4
 
 # ------------------------------
 # Genesis NFT
@@ -94,6 +96,20 @@ epoch = 2.4
 
 [contracts.stacking-dao-genesis-nft]
 path = "contracts/genesis-nft/stacking-dao-genesis-nft.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ------------------------------
+# NYC CC NFT
+# ------------------------------
+
+[contracts.stacking-dao-cc-nft-minter]
+path = "contracts/genesis-nft/stacking-dao-cc-nft-minter.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-cc-nft]
+path = "contracts/genesis-nft/stacking-dao-cc-nft.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -142,6 +158,11 @@ path = "contracts/block-info-v17.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.block-info-v20]
+path = "contracts/block-info-v20.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.commission-trait]
 path = "contracts/helpers/commission-trait.clar"
 clarity_version = 2
@@ -154,6 +175,16 @@ epoch = 2.4
 
 [contracts.nft-trait]
 path = "contracts/helpers/nft-trait.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.rewards-multi-v1]
+path = "contracts/helpers/rewards-multi-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.cc-redemption-v1]
+path = "contracts/helpers/cc-redemption-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -311,6 +342,11 @@ path = "contracts/version-2/stacking-pool-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.native-stacking-pool-v1]
+path = "contracts/version-2/native-stacking-pool-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.stacking-pool-signer-v1]
 path = "contracts/version-2/stacking-pool-signer-v1.clar"
 clarity_version = 2
@@ -328,6 +364,11 @@ epoch = 2.4
 
 [contracts.stacking-dao-core-v2]
 path = "contracts/version-2/stacking-dao-core-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-v3]
+path = "contracts/version-2/stacking-dao-core-v3.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -356,8 +397,23 @@ path = "contracts/version-2/direct-helpers-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.direct-helpers-v2]
+path = "contracts/version-2/direct-helpers-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.protocol-arkadiko-v1]
 path = "contracts/version-2/protocol-arkadiko-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.protocol-velar-v1]
+path = "contracts/version-2/protocol-velar-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.protocol-hermetica-v1]
+path = "contracts/version-2/protocol-hermetica-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -440,6 +496,20 @@ clarity_version = 2
 epoch = 2.4
 
 # ------------------------------
+# Nakamoto FOMO
+# ------------------------------
+
+[contracts.fomo]
+path = "contracts/nakamoto/fomo.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-fomo-nft]
+path = "contracts/nakamoto/stacking-dao-fomo-nft.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ------------------------------
 # Tests
 # ------------------------------
 
@@ -478,6 +548,11 @@ path = "contracts/tests/protocol-arkadiko-mock.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.protocol-zest-mock]
+path = "contracts/tests/protocol-zest-mock.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.fake-reserve]
 path = "contracts/tests/fake-reserve.clar"
 clarity_version = 2
@@ -510,5 +585,10 @@ epoch = 2.4
 
 [contracts.pox-fast-pool-v2-mock]
 path = "contracts/tests/pox-fast-pool-v2-mock.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.ccd012-redemption-nyc]
+path = "contracts/tests/ccd012-redemption-nyc.clar"
 clarity_version = 2
 epoch = 2.4

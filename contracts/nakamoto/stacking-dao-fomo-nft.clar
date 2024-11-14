@@ -1,14 +1,12 @@
-;; @contract stSTX withdraw NFT
+;; @contract Stacking DAO FOMO NFT
 ;; @version 1
 ;;
-;; To convert stSTX back into STX, a user must wait until the ongoing stacking cycle ends.
-;; When initiating a withdrawal, the stSTX tokens are already burned, while the user has not yet received STX.
-;; That's why this NFT is introduced, so the user has a token representation of the withdrawal initiation.
+;; Stacking DAO FOMO NFT for people who participate in the FOMO treasure hunt
 
 (impl-trait .nft-trait.nft-trait)
 (use-trait commission-trait .commission-trait.commission)
 
-(define-non-fungible-token ststx-withdraw uint)
+(define-non-fungible-token stacking-dao-fomo uint)
 
 ;;-------------------------------------
 ;; Constants
@@ -26,7 +24,6 @@
 ;; Variables
 ;;-------------------------------------
 
-;; TODO - Update for mainnet
 (define-data-var last-id uint u0)
 (define-data-var base-token-uri (string-ascii 210) "ipfs://")
 
@@ -79,7 +76,7 @@
 )
 
 (define-read-only (get-owner (token-id uint))
-  (ok (nft-get-owner? ststx-withdraw token-id))
+  (ok (nft-get-owner? stacking-dao-fomo token-id))
 )
 
 (define-public (transfer (token-id uint) (sender principal) (recipient principal))
@@ -126,7 +123,7 @@
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
-    (try! (nft-mint? ststx-withdraw (var-get last-id) recipient))
+    (try! (nft-mint? stacking-dao-fomo (var-get last-id) recipient))
 
     (map-set token-count recipient (+ (get-balance recipient) u1))
     (var-set last-id next-id)
@@ -140,16 +137,8 @@
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
-    ;; Unlist NFT
     (map-delete market token-id)
-    (print { a: "unlist-in-ustx", id: token-id })
-
-    (try! (nft-burn? ststx-withdraw token-id owner))
-    
-    ;; Unlist NFT
-    (map-delete market token-id)
-    (print { a: "unlist-in-ustx", id: token-id })
-
+    (try! (nft-burn? stacking-dao-fomo token-id owner))
 
     (map-set token-count owner (- (get-balance owner) u1))
     (ok true)
@@ -162,7 +151,7 @@
 
 (define-private (is-sender-owner (id uint))
   (let (
-    (owner (unwrap! (nft-get-owner? ststx-withdraw id) false))
+    (owner (unwrap! (nft-get-owner? stacking-dao-fomo id) false))
   )
     (and (is-eq tx-sender owner) (is-eq contract-caller owner))
   )
@@ -192,17 +181,17 @@
 
 (define-public (buy-in-ustx (id uint) (commission-contract <commission-trait>))
   (let (
-    (owner (unwrap! (nft-get-owner? ststx-withdraw id) (err ERR_NFT_NOT_FOUND)))
+    (owner (unwrap! (nft-get-owner? stacking-dao-fomo id) (err ERR_NFT_NOT_FOUND)))
     (listing (unwrap! (map-get? market id) (err ERR_NO_LISTING)))
     (price (get price listing))
   )
     (asserts! (is-eq (contract-of commission-contract) (get commission listing)) (err ERR_WRONG_COMMISSION))
 
     (try! (stx-transfer? price tx-sender owner))
-    (try! (transfer-helper id owner tx-sender))
-    (map-delete market id)
-
     (try! (contract-call? commission-contract pay id price))
+    (try! (transfer-helper id owner tx-sender))
+
+    (map-delete market id)
     (print { a: "buy-in-ustx", id: id })
     (ok true)
   )
@@ -210,7 +199,7 @@
 
 (define-private (transfer-helper (id uint) (sender principal) (recipient principal))
   (begin
-    (try! (nft-transfer? ststx-withdraw id sender recipient))
+    (try! (nft-transfer? stacking-dao-fomo id sender recipient))
 
     (let (
       (sender-balance (get-balance sender))

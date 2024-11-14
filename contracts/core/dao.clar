@@ -150,7 +150,8 @@
 
   ;; Version 2
   (map-set contracts { address: .stacking-dao-core-v2 } { active: true })
-  (map-set contracts { address: .direct-helpers-v1 } { active: true })
+  (map-set contracts { address: .stacking-dao-core-v3 } { active: true })
+  (map-set contracts { address: .direct-helpers-v2 } { active: true })
   (map-set contracts { address: .stacking-pool-v1 } { active: true })
   (map-set contracts { address: .rewards-v2 } { active: true })
   (map-set contracts { address: .strategy-v4 } { active: true })
@@ -165,4 +166,5 @@
   (map-set contracts { address: .stacking-delegate-2-2 } { active: true })
   (map-set contracts { address: .stacking-delegate-2-3 } { active: true })
 
+  (map-set contracts { address: .fomo } { active: true })
 )

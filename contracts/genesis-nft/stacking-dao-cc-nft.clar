@@ -1,14 +1,14 @@
-;; @contract stSTX withdraw NFT
+;; @contract Stacking DAO CityCoins (NYC) NFT
 ;; @version 1
 ;;
-;; To convert stSTX back into STX, a user must wait until the ongoing stacking cycle ends.
-;; When initiating a withdrawal, the stSTX tokens are already burned, while the user has not yet received STX.
-;; That's why this NFT is introduced, so the user has a token representation of the withdrawal initiation.
+;; Stacking DAO CityCoins (NYC) NFT for people redeeming NYC -> stSTX
+;; If people redeemed >100K NYC and <1M NYC, they are eligible for the Empire State Building Edition
+;; If people redeemed >1M NYC, they are eligible for the Statue of Liberty Edition
 
 (impl-trait .nft-trait.nft-trait)
 (use-trait commission-trait .commission-trait.commission)
 
-(define-non-fungible-token ststx-withdraw uint)
+(define-non-fungible-token stacking-dao-nyc uint)
 
 ;;-------------------------------------
 ;; Constants
@@ -26,7 +26,6 @@
 ;; Variables
 ;;-------------------------------------
 
-;; TODO - Update for mainnet
 (define-data-var last-id uint u0)
 (define-data-var base-token-uri (string-ascii 210) "ipfs://")
 
@@ -36,6 +35,10 @@
 
 (define-map token-count principal uint)
 (define-map market uint { price: uint, commission: principal })
+;; u0 - regular
+;; u1 - empire state building
+;; u2 - statue of liberty
+(define-map nyc-type uint uint)
 
 ;;-------------------------------------
 ;; Getters
@@ -47,6 +50,10 @@
 
 (define-read-only (get-balance (account principal))
   (default-to u0 (map-get? token-count account))
+)
+
+(define-read-only (get-nyc-type (id uint))
+  (default-to u0 (map-get? nyc-type id))
 )
 
 (define-read-only (get-listing-in-ustx (id uint))
@@ -79,7 +86,7 @@
 )
 
 (define-read-only (get-owner (token-id uint))
-  (ok (nft-get-owner? ststx-withdraw token-id))
+  (ok (nft-get-owner? stacking-dao-nyc token-id))
 )
 
 (define-public (transfer (token-id uint) (sender principal) (recipient principal))
@@ -120,15 +127,16 @@
 ;; Mint / Burn
 ;;-------------------------------------
 
-(define-public (mint-for-protocol (recipient principal))
+(define-public (mint-for-protocol (recipient principal) (type uint))
   (let (
     (next-id (+ u1 (var-get last-id)))
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
-    (try! (nft-mint? ststx-withdraw (var-get last-id) recipient))
+    (try! (nft-mint? stacking-dao-nyc (var-get last-id) recipient))
 
     (map-set token-count recipient (+ (get-balance recipient) u1))
+    (map-set nyc-type (var-get last-id) type)
     (var-set last-id next-id)
     (ok true)
   )
@@ -140,16 +148,7 @@
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
-    ;; Unlist NFT
-    (map-delete market token-id)
-    (print { a: "unlist-in-ustx", id: token-id })
-
-    (try! (nft-burn? ststx-withdraw token-id owner))
-    
-    ;; Unlist NFT
-    (map-delete market token-id)
-    (print { a: "unlist-in-ustx", id: token-id })
-
+    (try! (nft-burn? stacking-dao-nyc token-id owner))
 
     (map-set token-count owner (- (get-balance owner) u1))
     (ok true)
@@ -162,9 +161,9 @@
 
 (define-private (is-sender-owner (id uint))
   (let (
-    (owner (unwrap! (nft-get-owner? ststx-withdraw id) false))
+    (owner (unwrap! (nft-get-owner? stacking-dao-nyc id) false))
   )
-    (and (is-eq tx-sender owner) (is-eq contract-caller owner))
+    (or (is-eq tx-sender owner) (is-eq contract-caller owner))
   )
 )
 
@@ -192,17 +191,17 @@
 
 (define-public (buy-in-ustx (id uint) (commission-contract <commission-trait>))
   (let (
-    (owner (unwrap! (nft-get-owner? ststx-withdraw id) (err ERR_NFT_NOT_FOUND)))
+    (owner (unwrap! (nft-get-owner? stacking-dao-nyc id) (err ERR_NFT_NOT_FOUND)))
     (listing (unwrap! (map-get? market id) (err ERR_NO_LISTING)))
     (price (get price listing))
   )
     (asserts! (is-eq (contract-of commission-contract) (get commission listing)) (err ERR_WRONG_COMMISSION))
 
     (try! (stx-transfer? price tx-sender owner))
-    (try! (transfer-helper id owner tx-sender))
-    (map-delete market id)
-
     (try! (contract-call? commission-contract pay id price))
+    (try! (transfer-helper id owner tx-sender))
+
+    (map-delete market id)
     (print { a: "buy-in-ustx", id: id })
     (ok true)
   )
@@ -210,7 +209,7 @@
 
 (define-private (transfer-helper (id uint) (sender principal) (recipient principal))
   (begin
-    (try! (nft-transfer? ststx-withdraw id sender recipient))
+    (try! (nft-transfer? stacking-dao-nyc id sender recipient))
 
     (let (
       (sender-balance (get-balance sender))

@@ -1,10 +1,16 @@
-import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
+import {
+  Account,
+  Chain,
+  Clarinet,
+  Tx,
+  types,
+} from "https://deno.land/x/clarinet/index.ts";
 
-import { CoreV1 as Core } from '../wrappers/stacking-dao-core-helpers.ts';
-import { Reserve } from '../wrappers/reserve-helpers.ts';
+import { CoreV1 as Core } from "../wrappers/stacking-dao-core-helpers.ts";
+import { Reserve } from "../wrappers/reserve-helpers.ts";
 
 //-------------------------------------
-// Core 
+// Core
 //-------------------------------------
 
 Clarinet.test({
@@ -37,7 +43,11 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(200);
 
     // Request 200 STX for wallet_1
-    result = await reserve.requestStxForWithdrawal(deployer, 200, wallet_1.address);
+    result = await reserve.requestStxForWithdrawal(
+      deployer,
+      200,
+      wallet_1.address
+    );
     result.expectOk().expectUintWithDecimals(200);
 
     call = await reserve.getStxBalance();
@@ -51,7 +61,7 @@ Clarinet.test({
 
     call = await core.getStxBalance(wallet_1.address);
     call.result.expectUintWithDecimals(100000200);
-  }
+  },
 });
 
 Clarinet.test({
@@ -101,15 +111,15 @@ Clarinet.test({
     call = await reserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(1000);
 
-    call = await reserve.getStxStackingAtBlock(7);
+    call = await reserve.getStxStackingAtBlock(8);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = await reserve.getStxStackingAtBlock(8);
+    call = await reserve.getStxStackingAtBlock(9);
     call.result.expectOk().expectUintWithDecimals(200);
 
-    call = await reserve.getStxStackingAtBlock(9);
+    call = await reserve.getStxStackingAtBlock(10);
     call.result.expectOk().expectUintWithDecimals(100);
-  }
+  },
 });
 
 Clarinet.test({
@@ -152,11 +162,11 @@ Clarinet.test({
 
     call = await reserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(800);
-  }
+  },
 });
 
 //-------------------------------------
-// Errors 
+// Errors
 //-------------------------------------
 
 Clarinet.test({
@@ -168,11 +178,11 @@ Clarinet.test({
 
     let call = await reserve.getStxStackingAtBlock(600);
     call.result.expectErr().expectUint(17003);
-  }
+  },
 });
 
 //-------------------------------------
-// Access 
+// Access
 //-------------------------------------
 
 Clarinet.test({
@@ -186,9 +196,13 @@ Clarinet.test({
     let result = await reserve.lockStxForWithdrawal(wallet_1, 100);
     result.expectErr().expectUint(20003);
 
-    result = await reserve.requestStxForWithdrawal(wallet_1, 100, wallet_1.address);
+    result = await reserve.requestStxForWithdrawal(
+      wallet_1,
+      100,
+      wallet_1.address
+    );
     result.expectErr().expectUint(20003);
-  }
+  },
 });
 
 Clarinet.test({
@@ -204,7 +218,7 @@ Clarinet.test({
 
     result = await reserve.returnStxFromStacking(wallet_1, 100);
     result.expectErr().expectUint(20003);
-  }
+  },
 });
 
 Clarinet.test({
@@ -217,5 +231,5 @@ Clarinet.test({
 
     let result = await reserve.getStx(wallet_1, 100, wallet_1.address);
     result.expectErr().expectUint(20003);
-  }
+  },
 });

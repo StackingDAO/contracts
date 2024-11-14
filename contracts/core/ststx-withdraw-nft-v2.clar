@@ -1,5 +1,5 @@
 ;; @contract stSTX withdraw NFT
-;; @version 1
+;; @version 2
 ;;
 ;; To convert stSTX back into STX, a user must wait until the ongoing stacking cycle ends.
 ;; When initiating a withdrawal, the stSTX tokens are already burned, while the user has not yet received STX.
@@ -26,8 +26,7 @@
 ;; Variables
 ;;-------------------------------------
 
-;; TODO - Update for mainnet
-(define-data-var last-id uint u0)
+(define-data-var last-id uint u100000)
 (define-data-var base-token-uri (string-ascii 210) "ipfs://")
 
 ;;-------------------------------------
@@ -145,10 +144,6 @@
     (print { a: "unlist-in-ustx", id: token-id })
 
     (try! (nft-burn? ststx-withdraw token-id owner))
-    
-    ;; Unlist NFT
-    (map-delete market token-id)
-    (print { a: "unlist-in-ustx", id: token-id })
 
 
     (map-set token-count owner (- (get-balance owner) u1))

@@ -1,11 +1,21 @@
-import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from '../wrappers/tests-utils.ts';
+import {
+  Account,
+  Chain,
+  Clarinet,
+  Tx,
+  types,
+} from "https://deno.land/x/clarinet/index.ts";
+import {
+  qualifiedName,
+  REWARD_CYCLE_LENGTH,
+  PREPARE_PHASE_LENGTH,
+} from "../wrappers/tests-utils.ts";
 
-import { CoreV1 as Core } from '../wrappers/stacking-dao-core-helpers.ts';
-import { DAO } from '../wrappers/dao-helpers.ts';
+import { CoreV1 as Core } from "../wrappers/stacking-dao-core-helpers.ts";
+import { DAO } from "../wrappers/dao-helpers.ts";
 
 //-------------------------------------
-// Getters 
+// Getters
 //-------------------------------------
 
 Clarinet.test({
@@ -16,12 +26,12 @@ Clarinet.test({
     let core = new Core(chain, deployer);
 
     let call = await core.getBurnHeight();
-    call.result.expectUint(6);
+    call.result.expectUint(7);
 
     chain.mineEmptyBlock(500);
 
     call = await core.getBurnHeight();
-    call.result.expectUint(506);
+    call.result.expectUint(507);
   },
 });
 
@@ -118,9 +128,12 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1000000);
 
     // Got 1,000,000 stSTX
-    let call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
-      types.principal(deployer.address),
-    ], wallet_1.address);
+    let call = await chain.callReadOnlyFn(
+      "ststx-token",
+      "get-balance",
+      [types.principal(deployer.address)],
+      wallet_1.address
+    );
     call.result.expectOk().expectUintWithDecimals(1000000);
 
     // Advance to next cycle
@@ -147,11 +160,11 @@ Clarinet.test({
 
     // Now let's see what the stSTX to STX ratio is
     call = await core.getStxPerStstx();
-    call.result.expectOk().expectUintWithDecimals(1.019044); 
+    call.result.expectOk().expectUintWithDecimals(1.019044);
 
     // Current PoX cycle
     call = await core.getPoxCycle();
-    call.result.expectUint(2); 
+    call.result.expectUint(2);
 
     // Let's test withdrawals
     // We are in cycle 2, so cycle 3 is the first we can withdraw (hence u5 as second param)
@@ -159,9 +172,12 @@ Clarinet.test({
     result.expectOk().expectUint(0);
 
     // Deployer should have 10k stSTX less
-    call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
-      types.principal(deployer.address),
-    ], wallet_1.address);
+    call = await chain.callReadOnlyFn(
+      "ststx-token",
+      "get-balance",
+      [types.principal(deployer.address)],
+      wallet_1.address
+    );
     call.result.expectOk().expectUintWithDecimals(990000);
 
     // Deployer did not get STX back
@@ -173,7 +189,7 @@ Clarinet.test({
 
     // Current PoX cycle
     call = await core.getPoxCycle();
-    call.result.expectUint(3); 
+    call.result.expectUint(3);
 
     // Withdraw
     result = core.withdraw(deployer, 0);
@@ -190,7 +206,7 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Admin 
+// Admin
 //-------------------------------------
 
 Clarinet.test({
@@ -244,7 +260,7 @@ Clarinet.test({
 
     // Shutdown deposits
     result = await core.setShutdownDeposits(deployer, true);
-    result.expectOk().expectBool(true)
+    result.expectOk().expectBool(true);
 
     // Can not deposit anymore
     result = await core.deposit(deployer, 1000000);
@@ -252,7 +268,7 @@ Clarinet.test({
 
     // Enable deposits
     result = await core.setShutdownDeposits(deployer, false);
-    result.expectOk().expectBool(true)
+    result.expectOk().expectBool(true);
 
     // Can not deposit again
     result = await core.deposit(deployer, 100);
@@ -261,7 +277,7 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Errors 
+// Errors
 //-------------------------------------
 
 Clarinet.test({
@@ -274,18 +290,18 @@ Clarinet.test({
 
     // PoX cycle 0
     let call = await core.getPoxCycle();
-    call.result.expectUint(0); 
+    call.result.expectUint(0);
 
     // Advance to next cycle
     chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     // PoX cycle 1
     call = await core.getPoxCycle();
-    call.result.expectUint(1); 
+    call.result.expectUint(1);
 
     // We are in cycle 1, so next cycle to withdraw in is 2
     call = await core.getNextWithdrawCycle();
-    call.result.expectUint(2); 
+    call.result.expectUint(2);
 
     // Deposit some STX
     let result = await core.deposit(deployer, 10000);
@@ -304,7 +320,7 @@ Clarinet.test({
 
     // PoX cycle 2
     call = await core.getPoxCycle();
-    call.result.expectUint(2); 
+    call.result.expectUint(2);
 
     // Can not withdraw as not owner of NFT
     result = await core.withdraw(wallet_1, 0);
@@ -329,17 +345,17 @@ Clarinet.test({
 
     // PoX cycle 0
     let call = await core.getPoxCycle();
-    call.result.expectUint(0); 
+    call.result.expectUint(0);
 
     // Advance to next cycle
-    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH)
+    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH);
 
     // PoX cycle 1
     call = await core.getPoxCycle();
-    call.result.expectUint(1); 
+    call.result.expectUint(1);
 
     // Advance to prepare phase
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH - PREPARE_PHASE_LENGTH - 3);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH - PREPARE_PHASE_LENGTH - 4);
 
     // Still in cycle 1
     call = await core.getPoxCycle();
@@ -348,7 +364,7 @@ Clarinet.test({
     // In prepare phase, so can not withdraw in next cycle (2)
     // Need to withdraw in cycle after (3)
     call = await core.getNextWithdrawCycle();
-    call.result.expectUint(3); 
+    call.result.expectUint(3);
 
     // Deposit some STX
     let result = await core.deposit(deployer, 10000);
@@ -378,7 +394,7 @@ Clarinet.test({
 
     // PoX cycle 3
     call = await core.getPoxCycle();
-    call.result.expectUint(3); 
+    call.result.expectUint(3);
 
     // Can withdraw
     result = await core.withdraw(deployer, 0);
@@ -426,17 +442,22 @@ Clarinet.test({
   },
 });
 
-Clarinet.test({ 
+Clarinet.test({
   name: "core-v1: can not deposit with wrong reserve",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("stacking-dao-core-v1", "deposit", [
-        types.principal(qualifiedName("fake-reserve")),
-        types.uint(10 * 1000000),
-        types.none()
-      ], deployer.address)
+      Tx.contractCall(
+        "stacking-dao-core-v1",
+        "deposit",
+        [
+          types.principal(qualifiedName("fake-reserve")),
+          types.uint(10 * 1000000),
+          types.none(),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
   },
@@ -481,7 +502,7 @@ Clarinet.test({
 // });
 
 //-------------------------------------
-// Access 
+// Access
 //-------------------------------------
 
 Clarinet.test({
