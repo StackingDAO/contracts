@@ -1,13 +1,19 @@
-import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
+import {
+  Account,
+  Chain,
+  Clarinet,
+  Tx,
+  types,
+} from "https://deno.land/x/clarinet/index.ts";
 import { qualifiedName } from "../wrappers/tests-utils.ts";
 
-import { StackingDelegate } from '../wrappers/stacking-delegate-helpers.ts';
-import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
-import { Pox4Mock } from '../wrappers/pox-mock-helpers.ts';
-import { Rewards } from '../wrappers/rewards-helpers.ts';
+import { StackingDelegate } from "../wrappers/stacking-delegate-helpers.ts";
+import { StackingPool } from "../wrappers/stacking-pool-helpers.ts";
+import { Pox4Mock } from "../wrappers/pox-mock-helpers.ts";
+import { Rewards } from "../wrappers/rewards-helpers.ts";
 
 //-------------------------------------
-// Core 
+// Core
 //-------------------------------------
 
 Clarinet.test({
@@ -18,7 +24,11 @@ Clarinet.test({
     let stackingDelegate = new StackingDelegate(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(1000000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        1000000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
@@ -26,10 +36,16 @@ Clarinet.test({
     // Request
     //
 
-    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
+    let result = stackingDelegate.requestStxToStack(
+      deployer,
+      "stacking-delegate-1-1",
+      500000
+    );
     result.expectOk().expectUintWithDecimals(500000);
 
-    let call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    let call = await stackingDelegate.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
@@ -38,14 +54,22 @@ Clarinet.test({
     // Return
     //
 
-    result = stackingDelegate.returnStxFromStacking(deployer, "stacking-delegate-1-1", 300000);
+    result = stackingDelegate.returnStxFromStacking(
+      deployer,
+      "stacking-delegate-1-1",
+      300000
+    );
     result.expectOk().expectUintWithDecimals(300000);
 
-    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingDelegate.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
-    call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000 - 300000);
+    call.result
+      .expectTuple()
+      ["unlocked"].expectUintWithDecimals(500000 - 300000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
-  }
+  },
 });
 
 Clarinet.test({
@@ -64,42 +88,70 @@ Clarinet.test({
     //
 
     let block = chain.mineBlock([
-      Tx.transferSTX(1000000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        1000000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
+    let result = stackingDelegate.requestStxToStack(
+      deployer,
+      "stacking-delegate-1-1",
+      500000
+    );
     result.expectOk().expectUintWithDecimals(500000);
 
     //
     // Check data
     //
 
-    let call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    let call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectNone()
+    call.result.expectNone();
 
     //
     // Delegate
     //
 
-    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-v1"), 42);
+    result = stackingDelegate.delegateStx(
+      deployer,
+      "stacking-delegate-1-1",
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      42
+    );
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(200000);
-    call.result.expectSome().expectTuple()["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(200000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
     call.result.expectSome().expectTuple()["pox-addr"].expectNone();
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(42);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(42);
 
     //
     // Prepare pool
@@ -110,17 +162,29 @@ Clarinet.test({
     result = stackingPool.prepare(wallet_1);
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(200000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(300000);
     call.result.expectTuple()["unlock-height"].expectUint(42);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(200000);
-    call.result.expectSome().expectTuple()["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(200000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
     call.result.expectSome().expectTuple()["pox-addr"].expectNone();
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(42);
-  }
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(42);
+  },
 });
 
 Clarinet.test({
@@ -139,42 +203,70 @@ Clarinet.test({
     //
 
     let block = chain.mineBlock([
-      Tx.transferSTX(1000000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        1000000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
+    let result = stackingDelegate.requestStxToStack(
+      deployer,
+      "stacking-delegate-1-1",
+      500000
+    );
     result.expectOk().expectUintWithDecimals(500000);
 
     //
     // Check data
     //
 
-    let call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    let call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectNone()
+    call.result.expectNone();
 
     //
     // Delegate
     //
 
-    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-v1"), 42);
+    result = stackingDelegate.delegateStx(
+      deployer,
+      "stacking-delegate-1-1",
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      42
+    );
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(200000);
-    call.result.expectSome().expectTuple()["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(200000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
     call.result.expectSome().expectTuple()["pox-addr"].expectNone();
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(42);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(42);
 
     //
     // Prepare pool
@@ -185,32 +277,49 @@ Clarinet.test({
     result = stackingPool.prepare(wallet_1);
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(200000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(300000);
     call.result.expectTuple()["unlock-height"].expectUint(42);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(200000);
-    call.result.expectSome().expectTuple()["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(200000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
     call.result.expectSome().expectTuple()["pox-addr"].expectNone();
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(42);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(42);
 
     //
     // Revoke
     //
 
-    result = await stackingDelegate.revokeDelegateStx(deployer, "stacking-delegate-1-1");
+    result = await stackingDelegate.revokeDelegateStx(
+      deployer,
+      "stacking-delegate-1-1"
+    );
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(200000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(300000);
     call.result.expectTuple()["unlock-height"].expectUint(42);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
     call.result.expectNone();
-  }
+  },
 });
 
 Clarinet.test({
@@ -228,51 +337,84 @@ Clarinet.test({
     //
 
     let block = chain.mineBlock([
-      Tx.transferSTX(1000000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        1000000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
+    let result = stackingDelegate.requestStxToStack(
+      deployer,
+      "stacking-delegate-1-1",
+      500000
+    );
     result.expectOk().expectUintWithDecimals(500000);
 
     //
     // Check data
     //
 
-    let call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    let call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectNone()
+    call.result.expectNone();
 
     //
     // Delegate
     //
 
-    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-v1"), 42);
+    result = stackingDelegate.delegateStx(
+      deployer,
+      "stacking-delegate-1-1",
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      42
+    );
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(200000);
-    call.result.expectSome().expectTuple()["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(200000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
     call.result.expectSome().expectTuple()["pox-addr"].expectNone();
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(42);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(42);
 
     //
     // Revoke
     //
 
-    result = await stackingDelegate.revokeDelegateStx(deployer, "stacking-delegate-1-1");
+    result = await stackingDelegate.revokeDelegateStx(
+      deployer,
+      "stacking-delegate-1-1"
+    );
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
@@ -287,7 +429,7 @@ Clarinet.test({
     // Can not prepare as nothing delegated
     result = stackingPool.prepare(wallet_1);
     result.expectErr().expectUint(205001);
-  }
+  },
 });
 
 Clarinet.test({
@@ -299,23 +441,32 @@ Clarinet.test({
     let rewards = new Rewards(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(30 * 1000000, qualifiedName("stacking-delegate-1-1"), deployer.address)
+      Tx.transferSTX(
+        30 * 1000000,
+        qualifiedName("stacking-delegate-1-1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let result = stackingDelegate.handleRewards(deployer, "stacking-delegate-1-1", qualifiedName("stacking-pool-v1"), 30);
+    let result = stackingDelegate.handleRewards(
+      deployer,
+      "stacking-delegate-1-1",
+      qualifiedName("stacking-pool-v1"),
+      30
+    );
     result.expectOk().expectUintWithDecimals(30);
 
-    let call = await rewards.getTotalCommission();
-    call.result.expectUintWithDecimals(1.5);
-    call = await rewards.getTotalRewardsLeft();
-    call.result.expectUintWithDecimals(28.5);
-  }
+    let call = await rewards.getCycleRewardsStStx(0);
+    call.result.expectTuple()["processed"].expectBool(false);
+    call.result.expectTuple()["total-stx"].expectUintWithDecimals(30);
+    call.result.expectTuple()["commission-stx"].expectUintWithDecimals(1.5);
+    call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(28.5);
+  },
 });
 
-
 //-------------------------------------
-// Admin 
+// Admin
 //-------------------------------------
 
 Clarinet.test({
@@ -326,29 +477,41 @@ Clarinet.test({
     let stackingDelegate = new StackingDelegate(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(1000000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        1000000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 100);
+    let result = stackingDelegate.requestStxToStack(
+      deployer,
+      "stacking-delegate-1-1",
+      100
+    );
     result.expectOk().expectUintWithDecimals(100);
 
-    let call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    let call = await stackingDelegate.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(100);
-    
+
     result = stackingDelegate.returnStx(deployer, "stacking-delegate-1-1");
     result.expectOk().expectUintWithDecimals(100);
 
-    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingDelegate.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     result = stackingDelegate.returnStx(deployer, "stacking-delegate-1-1");
     result.expectOk().expectUintWithDecimals(0);
-  }
+  },
 });
 
 //-------------------------------------
-// Errors 
+// Errors
 //-------------------------------------
 
 Clarinet.test({
@@ -357,21 +520,31 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "request-stx-to-stack", [
-        types.principal(qualifiedName("fake-reserve")),
-        types.uint(100 * 1000000),
-      ], deployer.address)
+      Tx.contractCall(
+        "stacking-delegate-1-1",
+        "request-stx-to-stack",
+        [
+          types.principal(qualifiedName("fake-reserve")),
+          types.uint(100 * 1000000),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
 
     block = chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "return-stx-from-stacking", [
-        types.principal(qualifiedName("fake-reserve")),
-        types.uint(100 * 1000000),
-      ], deployer.address)
+      Tx.contractCall(
+        "stacking-delegate-1-1",
+        "return-stx-from-stacking",
+        [
+          types.principal(qualifiedName("fake-reserve")),
+          types.uint(100 * 1000000),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
-  }
+  },
 });
 
 Clarinet.test({
@@ -380,14 +553,19 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "handle-rewards", [
-        types.principal(qualifiedName("stacking-pool-v1")),
-        types.uint(100 * 1000000),
-        types.principal(qualifiedName("fake-rewards")),
-      ], deployer.address)
+      Tx.contractCall(
+        "stacking-delegate-1-1",
+        "handle-rewards",
+        [
+          types.principal(qualifiedName("stacking-pool-v1")),
+          types.uint(100 * 1000000),
+          types.principal(qualifiedName("fake-rewards")),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
-  }
+  },
 });
 
 Clarinet.test({
@@ -396,17 +574,19 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "return-stx", [
-        types.principal(qualifiedName("fake-reserve")),
-      ], deployer.address)
+      Tx.contractCall(
+        "stacking-delegate-1-1",
+        "return-stx",
+        [types.principal(qualifiedName("fake-reserve"))],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
-  }
+  },
 });
 
-
 //-------------------------------------
-// Access 
+// Access
 //-------------------------------------
 
 Clarinet.test({
@@ -417,22 +597,44 @@ Clarinet.test({
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
 
-    let result = stackingDelegate.delegateStx(wallet_1, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-v1"), 42);
+    let result = stackingDelegate.delegateStx(
+      wallet_1,
+      "stacking-delegate-1-1",
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      42
+    );
     result.expectErr().expectUint(20003);
 
-    result = await stackingDelegate.revokeDelegateStx(wallet_1, "stacking-delegate-1-1");
+    result = await stackingDelegate.revokeDelegateStx(
+      wallet_1,
+      "stacking-delegate-1-1"
+    );
     result.expectErr().expectUint(20003);
 
-    result = stackingDelegate.requestStxToStack(wallet_1, "stacking-delegate-1-1", 500000);
+    result = stackingDelegate.requestStxToStack(
+      wallet_1,
+      "stacking-delegate-1-1",
+      500000
+    );
     result.expectErr().expectUint(20003);
 
-    result = stackingDelegate.returnStxFromStacking(wallet_1, "stacking-delegate-1-1", 300000);
+    result = stackingDelegate.returnStxFromStacking(
+      wallet_1,
+      "stacking-delegate-1-1",
+      300000
+    );
     result.expectErr().expectUint(20003);
 
-    result = stackingDelegate.handleRewards(wallet_1, "stacking-delegate-1-1", qualifiedName("stacking-pool-v1"), 30);
+    result = stackingDelegate.handleRewards(
+      wallet_1,
+      "stacking-delegate-1-1",
+      qualifiedName("stacking-pool-v1"),
+      30
+    );
     result.expectErr().expectUint(20003);
 
     result = stackingDelegate.returnStx(wallet_1, "stacking-delegate-1-1");
     result.expectErr().expectUint(20003);
-  }
+  },
 });

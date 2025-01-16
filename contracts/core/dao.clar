@@ -127,6 +127,7 @@
 
   (map-set contracts { address: tx-sender } { active: true })
 
+  ;; Version 1
   (map-set contracts { address: .stacking-dao-core-v1 } { active: true })
   (map-set contracts { address: .reserve-v1 } { active: true })
   (map-set contracts { address: .commission-v1 } { active: true })
@@ -167,4 +168,16 @@
   (map-set contracts { address: .stacking-delegate-2-3 } { active: true })
 
   (map-set contracts { address: .fomo } { active: true })
+
+  ;; Version 3
+  (map-set contracts { address: .ststxbtc-token } { active: true })
+
+  (map-set contracts { address: .stacking-dao-core-v4 } { active: true })
+  (map-set contracts { address: .direct-helpers-v3 } { active: true })
+
+  (map-set contracts { address: .ststxbtc-tracking } { active: true })
+  (map-set contracts { address: .stacking-dao-core-btc-v1 } { active: true })
+  (map-set contracts { address: .commission-btc-v1 } { active: true })
+  (map-set contracts { address: .rewards-v3 } { active: true })
+  (map-set contracts { address: .swap-ststx-ststxbtc-v1 } { active: true })
 )

@@ -355,14 +355,14 @@ plan:
             contract-name: sdao-token
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 20250
-            path: contracts/version-3/sdao-token.clar
+            path: contracts/version-x/sdao-token.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
             contract-name: staking-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 91080
-            path: contracts/version-3/staking-v1.clar
+            path: contracts/version-x/staking-v1.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:

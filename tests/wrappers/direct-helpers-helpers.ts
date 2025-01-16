@@ -27,7 +27,7 @@ class DirectHelpers {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "direct-helpers-v2",
+        "direct-helpers-v3",
         "add-direct-stacking",
         [
           types.principal(user),
@@ -43,7 +43,7 @@ class DirectHelpers {
   subtractDirectStacking(caller: Account, user: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "direct-helpers-v2",
+        "direct-helpers-v3",
         "subtract-direct-stacking",
         [types.principal(user), types.uint(amount * 1000000)],
         caller.address
@@ -55,7 +55,7 @@ class DirectHelpers {
   stopDirectStacking(caller: Account, user: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "direct-helpers-v2",
+        "direct-helpers-v3",
         "stop-direct-stacking",
         [types.principal(user)],
         caller.address
@@ -67,7 +67,7 @@ class DirectHelpers {
   subtractDirectStackingUser(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "direct-helpers-v2",
+        "direct-helpers-v3",
         "subtract-direct-stacking-user",
         [types.uint(amount * 1000000)],
         caller.address
@@ -79,7 +79,7 @@ class DirectHelpers {
   stopDirectStackingUser(caller: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "direct-helpers-v2",
+        "direct-helpers-v3",
         "stop-direct-stacking-user",
         [],
         caller.address
@@ -90,7 +90,7 @@ class DirectHelpers {
 
   calculateDirectStackingInfo(protocols: string[], user: string) {
     return this.chain.callReadOnlyFn(
-      "direct-helpers-v2",
+      "direct-helpers-v3",
       "calculate-direct-stacking-info",
       [
         types.principal(qualifiedName("reserve-v1")),
@@ -104,7 +104,7 @@ class DirectHelpers {
   updateDirectStacking(caller: Account, protocols: string[], user: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "direct-helpers-v2",
+        "direct-helpers-v3",
         "update-direct-stacking",
         [
           types.principal(qualifiedName("reserve-v1")),

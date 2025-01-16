@@ -1,13 +1,19 @@
-import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
+import {
+  Account,
+  Chain,
+  Clarinet,
+  Tx,
+  types,
+} from "https://deno.land/x/clarinet/index.ts";
 import { qualifiedName } from "../wrappers/tests-utils.ts";
 
-import { DelegatesHandler } from '../wrappers/delegates-handler-helper.ts';
-import { Pox4Mock } from '../wrappers/pox-mock-helpers.ts';
-import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
-import { Rewards } from '../wrappers/rewards-helpers.ts';
+import { DelegatesHandler } from "../wrappers/delegates-handler-helper.ts";
+import { Pox4Mock } from "../wrappers/pox-mock-helpers.ts";
+import { StackingPool } from "../wrappers/stacking-pool-helpers.ts";
+import { Rewards } from "../wrappers/rewards-helpers.ts";
 
 //-------------------------------------
-// Core 
+// Core
 //-------------------------------------
 
 Clarinet.test({
@@ -19,44 +25,77 @@ Clarinet.test({
     let pox = new Pox4Mock(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(100 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        100 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Delegate
-    let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 100, qualifiedName("stacking-pool-v1"), 50);
+    let result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      100,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectOk().expectBool(true);
 
-    let call = await delegatesHandler.getStxAccount(qualifiedName("stacking-delegate-1-1"));
+    let call = await delegatesHandler.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlock-height"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(100);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(100);
-    call.result.expectSome().expectTuple()["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(100);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["delegated-to"].expectPrincipal(qualifiedName("stacking-pool-v1"));
     call.result.expectSome().expectTuple()["pox-addr"].expectNone();
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(50);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(50);
 
-    call = await delegatesHandler.calculateRewards(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateRewards(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
-    call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateExcess(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
     // Revoke
-    result = await delegatesHandler.revoke(deployer, qualifiedName("stacking-delegate-1-1"));
+    result = await delegatesHandler.revoke(
+      deployer,
+      qualifiedName("stacking-delegate-1-1")
+    );
     result.expectOk().expectBool(true);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectNone()
+    call.result.expectNone();
 
-    call = await delegatesHandler.calculateRewards(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateRewards(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
-    call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateExcess(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
-  }
+  },
 });
 
 Clarinet.test({
@@ -68,45 +107,73 @@ Clarinet.test({
     let rewards = new Rewards(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(100 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        100 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Delegate
-    let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 100, qualifiedName("stacking-pool-v1"), 50);
+    let result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      100,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectOk().expectBool(true);
 
     // Add extra STX (= rewards)
     block = chain.mineBlock([
-      Tx.transferSTX(10 * 1000000, qualifiedName("stacking-delegate-1-1"), deployer.address)
+      Tx.transferSTX(
+        10 * 1000000,
+        qualifiedName("stacking-delegate-1-1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let call = await delegatesHandler.calculateRewards(qualifiedName("stacking-delegate-1-1"));
+    let call = await delegatesHandler.calculateRewards(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(10);
 
-    call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateExcess(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
     // Handle rewards
-    result = await delegatesHandler.handleRewards(deployer, qualifiedName("stacking-delegate-1-1"))
+    result = await delegatesHandler.handleRewards(
+      deployer,
+      qualifiedName("stacking-delegate-1-1")
+    );
     result.expectOk().expectUintWithDecimals(10);
 
-    call = await delegatesHandler.calculateRewards(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateRewards(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
-    call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateExcess(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
     // Check data
-    call = await delegatesHandler.getLastSelectedPool(qualifiedName("stacking-delegate-1-1"))
+    call = await delegatesHandler.getLastSelectedPool(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectPrincipal(qualifiedName("stacking-pool-v1"));
 
-    call = await rewards.getTotalCommission();
-    call.result.expectUintWithDecimals(0.5);
-    call = await rewards.getTotalRewardsLeft();
-    call.result.expectUintWithDecimals(9.5);
-  }
+    call = await rewards.getCycleRewardsStStx(0);
+    call.result.expectTuple()["processed"].expectBool(false);
+    call.result.expectTuple()["total-stx"].expectUintWithDecimals(10);
+    call.result.expectTuple()["commission-stx"].expectUintWithDecimals(0.5);
+    call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(9.5);
+  },
 });
 
 Clarinet.test({
@@ -117,45 +184,76 @@ Clarinet.test({
     let delegatesHandler = new DelegatesHandler(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(100 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        100 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Delegate
-    let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 100, qualifiedName("stacking-pool-v1"), 50);
+    let result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      100,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectOk().expectBool(true);
 
-    let call = await delegatesHandler.getTargetLockedAmount(qualifiedName("stacking-delegate-1-1"));
+    let call = await delegatesHandler.getTargetLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(100);
-   
-    call = await delegatesHandler.getLastLockedAmount(qualifiedName("stacking-delegate-1-1"));
+
+    call = await delegatesHandler.getLastLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
-    call = await delegatesHandler.getLastUnlockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.getLastUnlockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(100);
-
 
     // Update amounts manually
-    result = await delegatesHandler.updateAmounts(deployer, qualifiedName("stacking-delegate-1-1"), 50, 0, 100);
+    result = await delegatesHandler.updateAmounts(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      50,
+      0,
+      100
+    );
     result.expectOk().expectBool(true);
 
-    call = await delegatesHandler.calculateRewards(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateRewards(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
-    call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateExcess(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(50);
 
-
     // Handle excess
-    result = await delegatesHandler.handleExcess(deployer, qualifiedName("stacking-delegate-1-1"))
+    result = await delegatesHandler.handleExcess(
+      deployer,
+      qualifiedName("stacking-delegate-1-1")
+    );
     result.expectOk().expectUintWithDecimals(50);
 
-    call = await delegatesHandler.calculateRewards(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateRewards(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
-    call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.calculateExcess(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
-  }
+  },
 });
 
 Clarinet.test({
@@ -173,35 +271,70 @@ Clarinet.test({
     //
 
     let block = chain.mineBlock([
-      Tx.transferSTX(200000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        200000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
+    let result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectOk().expectBool(true);
 
-    let call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(200000);
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(50);
+    let call = await pox.getCheckDelegation(
+      qualifiedName("stacking-delegate-1-1")
+    );
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(200000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(50);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(200000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
-
 
     //
     // Delegate again
     //
 
-    result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 190000, qualifiedName("stacking-pool-v1"), 50);
+    result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      190000,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectOk().expectBool(true);
 
     call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectSome().expectTuple()["amount-ustx"].expectUintWithDecimals(190000);
-    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(50);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["amount-ustx"].expectUintWithDecimals(190000);
+    call.result
+      .expectSome()
+      .expectTuple()
+      ["until-burn-ht"].expectSome()
+      .expectUint(50);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(190000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
@@ -215,12 +348,13 @@ Clarinet.test({
     result = stackingPool.prepare(deployer);
     result.expectOk().expectBool(true);
 
-    call = await stackingPool.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call = await stackingPool.getStxAccount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectTuple()["locked"].expectUintWithDecimals(190000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlock-height"].expectUint(42);
-
-  }
+  },
 });
 
 Clarinet.test({
@@ -232,32 +366,49 @@ Clarinet.test({
     let stackingPool = new StackingPool(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(200000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        200000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-
     // Delegate
-    let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
+    let result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectOk().expectBool(true);
 
     // Check data
-    let call = await delegatesHandler.getLastSelectedPool(qualifiedName("stacking-delegate-1-1"))
+    let call = await delegatesHandler.getLastSelectedPool(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectPrincipal(qualifiedName("stacking-pool-v1"));
 
-    call = await delegatesHandler.getTargetLockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.getTargetLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(200000);
 
-    call = await delegatesHandler.getLastLockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.getLastLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
-    call = await delegatesHandler.getLastUnlockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.getLastUnlockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(200000);
-  }
+  },
 });
 
 //-------------------------------------
-// Admin 
+// Admin
 //-------------------------------------
 
 Clarinet.test({
@@ -267,39 +418,59 @@ Clarinet.test({
 
     let delegatesHandler = new DelegatesHandler(chain, deployer);
 
-    let call = await delegatesHandler.getLastSelectedPool(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectPrincipal(qualifiedName("stacking-pool-v1"))
+    let call = await delegatesHandler.getLastSelectedPool(
+      qualifiedName("stacking-delegate-1-1")
+    );
+    call.result.expectPrincipal(qualifiedName("stacking-pool-v1"));
 
-    call = await delegatesHandler.getTargetLockedAmount(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectUintWithDecimals(0);
-   
-    call = await delegatesHandler.getLastLockedAmount(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectUintWithDecimals(0);
-
-    call = await delegatesHandler.getLastUnlockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.getTargetLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(0);
 
+    call = await delegatesHandler.getLastLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
+    call.result.expectUintWithDecimals(0);
 
-    let result = await delegatesHandler.updateAmounts(deployer, qualifiedName("stacking-delegate-1-1"), 100, 150, 50);
+    call = await delegatesHandler.getLastUnlockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
+    call.result.expectUintWithDecimals(0);
+
+    let result = await delegatesHandler.updateAmounts(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      100,
+      150,
+      50
+    );
     result.expectOk().expectBool(true);
 
-    call = await delegatesHandler.getLastSelectedPool(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectPrincipal(qualifiedName("stacking-pool-v1"))
+    call = await delegatesHandler.getLastSelectedPool(
+      qualifiedName("stacking-delegate-1-1")
+    );
+    call.result.expectPrincipal(qualifiedName("stacking-pool-v1"));
 
-    call = await delegatesHandler.getTargetLockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.getTargetLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(100);
-   
-    call = await delegatesHandler.getLastLockedAmount(qualifiedName("stacking-delegate-1-1"));
+
+    call = await delegatesHandler.getLastLockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(150);
 
-    call = await delegatesHandler.getLastUnlockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call = await delegatesHandler.getLastUnlockedAmount(
+      qualifiedName("stacking-delegate-1-1")
+    );
     call.result.expectUintWithDecimals(50);
-
-  }
+  },
 });
 
 //-------------------------------------
-// Errors 
+// Errors
 //-------------------------------------
 
 Clarinet.test({
@@ -312,11 +483,21 @@ Clarinet.test({
     await stackingPool.addSignatures(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.transferSTX(200000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+      Tx.transferSTX(
+        200000 * 1000000,
+        qualifiedName("reserve-v1"),
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
+    let result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectOk().expectBool(true);
 
     chain.mineEmptyBlockUntil(19);
@@ -324,9 +505,15 @@ Clarinet.test({
     result = stackingPool.prepare(deployer);
     result.expectOk().expectBool(true);
 
-    result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 190000, qualifiedName("stacking-pool-v1"), 50);
+    result = await delegatesHandler.revokeAndDelegate(
+      deployer,
+      qualifiedName("stacking-delegate-1-1"),
+      190000,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectErr().expectUint(201001);
-  }
+  },
 });
 
 Clarinet.test({
@@ -335,32 +522,47 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("delegates-handler-v1", "handle-rewards", [
-        types.principal(qualifiedName("fake-stacking-delegate")),
-        types.principal(qualifiedName("reserve-v1")),
-        types.principal(qualifiedName("rewards-v2")),
-      ], deployer.address)
+      Tx.contractCall(
+        "delegates-handler-v1",
+        "handle-rewards",
+        [
+          types.principal(qualifiedName("fake-stacking-delegate")),
+          types.principal(qualifiedName("reserve-v1")),
+          types.principal(qualifiedName("rewards-v2")),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
 
     block = chain.mineBlock([
-      Tx.contractCall("delegates-handler-v1", "handle-rewards", [
-        types.principal(qualifiedName("stacking-delegate-1-1")),
-        types.principal(qualifiedName("fake-reserve")),
-        types.principal(qualifiedName("rewards-v2")),
-      ], deployer.address)
+      Tx.contractCall(
+        "delegates-handler-v1",
+        "handle-rewards",
+        [
+          types.principal(qualifiedName("stacking-delegate-1-1")),
+          types.principal(qualifiedName("fake-reserve")),
+          types.principal(qualifiedName("rewards-v2")),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
 
     block = chain.mineBlock([
-      Tx.contractCall("delegates-handler-v1", "handle-rewards", [
-        types.principal(qualifiedName("stacking-delegate-1-1")),
-        types.principal(qualifiedName("reserve-v1")),
-        types.principal(qualifiedName("fake-rewards")),
-      ], deployer.address)
+      Tx.contractCall(
+        "delegates-handler-v1",
+        "handle-rewards",
+        [
+          types.principal(qualifiedName("stacking-delegate-1-1")),
+          types.principal(qualifiedName("reserve-v1")),
+          types.principal(qualifiedName("fake-rewards")),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
-  }
+  },
 });
 
 Clarinet.test({
@@ -369,25 +571,35 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("delegates-handler-v1", "handle-excess", [
-        types.principal(qualifiedName("fake-stacking-delegate")),
-        types.principal(qualifiedName("reserve-v1")),
-      ], deployer.address)
+      Tx.contractCall(
+        "delegates-handler-v1",
+        "handle-excess",
+        [
+          types.principal(qualifiedName("fake-stacking-delegate")),
+          types.principal(qualifiedName("reserve-v1")),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
 
     block = chain.mineBlock([
-      Tx.contractCall("delegates-handler-v1", "handle-excess", [
-        types.principal(qualifiedName("stacking-delegate-1-1")),
-        types.principal(qualifiedName("fake-reserve")),
-      ], deployer.address)
+      Tx.contractCall(
+        "delegates-handler-v1",
+        "handle-excess",
+        [
+          types.principal(qualifiedName("stacking-delegate-1-1")),
+          types.principal(qualifiedName("fake-reserve")),
+        ],
+        deployer.address
+      ),
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
-  }
+  },
 });
 
 //-------------------------------------
-// Access 
+// Access
 //-------------------------------------
 
 Clarinet.test({
@@ -398,13 +610,28 @@ Clarinet.test({
 
     let delegatesHandler = new DelegatesHandler(chain, deployer);
 
-    let result = await delegatesHandler.updateAmounts(wallet_1, qualifiedName("stacking-delegate-1-1"), 100, 150, 50);
+    let result = await delegatesHandler.updateAmounts(
+      wallet_1,
+      qualifiedName("stacking-delegate-1-1"),
+      100,
+      150,
+      50
+    );
     result.expectErr().expectUint(20001);
 
-    result = await delegatesHandler.revokeAndDelegate(wallet_1, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
+    result = await delegatesHandler.revokeAndDelegate(
+      wallet_1,
+      qualifiedName("stacking-delegate-1-1"),
+      200000,
+      qualifiedName("stacking-pool-v1"),
+      50
+    );
     result.expectErr().expectUint(20003);
 
-    result = await delegatesHandler.revoke(wallet_1, qualifiedName("stacking-delegate-1-1"));
+    result = await delegatesHandler.revoke(
+      wallet_1,
+      qualifiedName("stacking-delegate-1-1")
+    );
     result.expectErr().expectUint(20003);
-  }
+  },
 });

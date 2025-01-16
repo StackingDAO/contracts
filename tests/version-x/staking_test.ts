@@ -223,7 +223,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(4);
+    call.result.expectUint(5);
 
     // Pending rewards should be 0
     call = await staking.getPendingRewards(wallet_1.address);
