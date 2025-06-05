@@ -12,14 +12,132 @@ import { Reserve } from "../wrappers/reserve-helpers.ts";
 import { DataPools } from "../wrappers/data-pools-helpers.ts";
 import { CoreV1 } from "../wrappers/stacking-dao-core-helpers.ts";
 import { SBtcToken } from "../wrappers/sbtc-token-helpers.ts";
-import { StStxBtcToken } from "../wrappers/ststxbtc-token-helpers.ts";
+import { StStxBtcTokenV1, StStxBtcToken } from "../wrappers/ststxbtc-token-helpers.ts";
+import { StStxBtcTracking } from "../wrappers/ststxbtc-tracking-helpers.ts";
 
 //-------------------------------------
 // Core
 //-------------------------------------
 
 Clarinet.test({
-  name: "rewards: add rewards and process",
+  name: "rewards-v4: rewards are split between ststxbtc-tracking and ststxbtc-tracking-v2",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let rewards = new Rewards(chain, deployer);
+    let sBtcToken = new SBtcToken(chain, deployer);
+    let stStxBtcTokenV1 = new StStxBtcTokenV1(chain, deployer);
+    let stStxBtcToken = new StStxBtcToken(chain, deployer);
+    let stStxBtcTracking = new StStxBtcTracking(chain, deployer);
+
+    // Mint sBTC tokens for rewards
+    let result = await sBtcToken.protocolMint(deployer, 1000, deployer.address);
+    result.expectOk().expectBool(true);
+
+    // Mint stStxBtcTokenV1 tokens to wallet_1
+    result = await stStxBtcTokenV1.mintForProtocol(deployer, 1000, wallet_1.address);
+    result.expectOk().expectBool(true);
+
+    // Mint stStxBtcTokenV1 tokens to wallet_2
+    result = await stStxBtcTokenV1.mintForProtocol(deployer, 2000, wallet_2.address);
+    result.expectOk().expectBool(true);
+
+    // Mint stStxBtcToken tokens to wallet_2
+    result = await stStxBtcToken.mintForProtocol(deployer, 2000, wallet_2.address);
+    result.expectOk().expectBool(true);
+
+    // Add rewards
+    result = await rewards.addRewardsSBtc(deployer, qualifiedName("stacking-pool-v1"), 500);
+    result.expectOk().expectBool(true);
+
+    // Go to end of next cycle
+    await chain.mineEmptyBlockUntil(21 * 2 + 1);
+
+    // Process all rewards
+    result = await rewards.processRewards(deployer, 0);
+    result.expectOk().expectTuple()["total-intervals"].expectUint(7);
+    result.expectOk().expectTuple()["past-intervals"].expectUint(7);
+    result.expectOk().expectTuple()["commission-stx"].expectUintWithDecimals(0);
+    result.expectOk().expectTuple()["protocol-stx"].expectUintWithDecimals(0);
+    result.expectOk().expectTuple()["commission-sbtc"].expectUintWithDecimals(25);
+    result.expectOk().expectTuple()["protocol-sbtc"].expectUintWithDecimals(475);
+
+    // Check rewards in tracking contracts
+    let call = await chain.callReadOnlyFn(
+      "ststxbtc-tracking",
+      "get-pending-rewards",
+      [
+        types.principal(wallet_1.address),
+        types.principal(wallet_1.address)
+      ],
+      deployer.address
+    )
+    call.result.expectOk().expectUintWithDecimals(95);
+
+    call = await chain.callReadOnlyFn(
+      "ststxbtc-tracking",
+      "get-pending-rewards",
+      [
+        types.principal(wallet_2.address),
+        types.principal(wallet_2.address)
+      ],
+      deployer.address
+    )
+    call.result.expectOk().expectUintWithDecimals(190);
+
+    call = await stStxBtcTracking.getPendingRewards(wallet_1.address, wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(0); 
+    call = await stStxBtcTracking.getPendingRewards(wallet_2.address, wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(190); 
+
+    // Claim rewards
+    let block = chain.mineBlock([
+      Tx.contractCall(
+        "ststxbtc-tracking",
+        "claim-pending-rewards",
+        [
+          types.principal(wallet_1.address),
+          types.principal(wallet_1.address)
+        ],
+        wallet_1.address
+      )
+    ]);
+    result = block.receipts[0].result;
+    result.expectOk().expectUintWithDecimals(95);
+
+    block = chain.mineBlock([
+      Tx.contractCall(
+        "ststxbtc-tracking",
+        "claim-pending-rewards",
+        [
+          types.principal(wallet_2.address),
+          types.principal(wallet_2.address)
+        ],
+        wallet_2.address
+      )
+    ]);
+    result = block.receipts[0].result;
+    result.expectOk().expectUintWithDecimals(190);
+
+    result = await stStxBtcTracking.claimPendingRewards(wallet_1, wallet_1.address, wallet_1.address);
+    result.expectOk().expectUintWithDecimals(0);
+
+    result = await stStxBtcTracking.claimPendingRewards(wallet_2, wallet_2.address, wallet_2.address);
+    result.expectOk().expectUintWithDecimals(190);
+
+    // Verify final balances
+    call = await sBtcToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(95);
+
+    call = await sBtcToken.getBalance(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(380);
+  },
+});
+
+Clarinet.test({
+  name: "rewards-v4: add rewards and process",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -43,16 +161,18 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     let call = await rewards.getCycleRewardsStStx(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-stx"].expectUintWithDecimals(0);
     call.result.expectTuple()["commission-stx"].expectUintWithDecimals(0);
     call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-commission-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-stx"].expectUintWithDecimals(0);
 
     call = await rewards.getCycleRewardsStStxBtc(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-sbtc"].expectUintWithDecimals(0);
     call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0);
     call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-commission-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-sbtc"].expectUintWithDecimals(0);
 
     result = await rewards.addRewards(
       deployer,
@@ -68,34 +188,85 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     call = await rewards.getCycleRewardsStStx(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-stx"].expectUintWithDecimals(100);
     call.result.expectTuple()["commission-stx"].expectUintWithDecimals(5);
     call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(95);
+    call.result.expectTuple()["processed-commission-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-stx"].expectUintWithDecimals(0);
 
     call = await rewards.getCycleRewardsStStxBtc(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-sbtc"].expectUintWithDecimals(10);
     call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0.5);
     call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(9.5);
+    call.result.expectTuple()["processed-commission-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-sbtc"].expectUintWithDecimals(0);
 
     // Go to end of cycle
-    await chain.mineEmptyBlockUntil(19);
+    await chain.mineEmptyBlockUntil(21);
+
+    call = await rewards.shouldProcessRewards(0);
+    call.result.expectTuple()["total-intervals"].expectUint(7);
+    call.result.expectTuple()["past-intervals"].expectUint(0);
+    call.result.expectTuple()["commission-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(0);
+
+    // Advance first interval
+    await chain.mineEmptyBlockUntil(21 + 4);
+
+    call = await rewards.shouldProcessRewards(0);
+    call.result.expectTuple()["total-intervals"].expectUint(7);
+    call.result.expectTuple()["past-intervals"].expectUint(1);
+    call.result.expectTuple()["commission-stx"].expectUintWithDecimals(0.714285); // 5/7
+    call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(13.571428); // 95/7
+    call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0.071428);
+    call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(1.357142);
 
     result = await rewards.processRewards(deployer, 0);
-    result.expectOk().expectBool(true);
+    result.expectOk().expectTuple()["total-intervals"].expectUint(7);
+    result.expectOk().expectTuple()["past-intervals"].expectUint(1);
+
+    call = await rewards.shouldProcessRewards(0);
+    call.result.expectTuple()["commission-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(0);
+
+    // Advance to third cycle
+    await chain.mineEmptyBlockUntil(21 + 21 + 21 + 1);
+
+    call = await rewards.shouldProcessRewards(0);
+    call.result.expectTuple()["total-intervals"].expectUint(7);
+    call.result.expectTuple()["past-intervals"].expectUint(7);
+    call.result.expectTuple()["commission-stx"].expectUintWithDecimals(4.285715);
+    call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(81.428572);
+    call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0.428572);
+    call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(8.142858);
+
+    result = await rewards.processRewards(deployer, 0);
+    result.expectOk().expectTuple()["total-intervals"].expectUint(7);
+    result.expectOk().expectTuple()["past-intervals"].expectUint(7);
+
+    call = await rewards.shouldProcessRewards(0);
+    call.result.expectTuple()["commission-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(0);
 
     call = await rewards.getCycleRewardsStStx(0);
-    call.result.expectTuple()["processed"].expectBool(true);
     call.result.expectTuple()["total-stx"].expectUintWithDecimals(100);
     call.result.expectTuple()["commission-stx"].expectUintWithDecimals(5);
     call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(95);
+    call.result.expectTuple()["processed-commission-stx"].expectUintWithDecimals(5);
+    call.result.expectTuple()["processed-protocol-stx"].expectUintWithDecimals(95);
 
     call = await rewards.getCycleRewardsStStxBtc(0);
-    call.result.expectTuple()["processed"].expectBool(true);
     call.result.expectTuple()["total-sbtc"].expectUintWithDecimals(10);
     call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0.5);
     call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(9.5);
+    call.result.expectTuple()["processed-commission-sbtc"].expectUintWithDecimals(0.5);
+    call.result.expectTuple()["processed-protocol-sbtc"].expectUintWithDecimals(9.5);
 
     call = await reserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(95);
@@ -103,37 +274,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "rewards: rewards cycle",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let rewards = new Rewards(chain, deployer);
-
-    let call = await rewards.getRewardsCycle();
-    call.result.expectUint(0);
-
-    // Go to end of cycle
-    await chain.mineEmptyBlockUntil(21 - 10 + 1);
-
-    call = await rewards.getRewardsCycle();
-    call.result.expectUint(1);
-
-    // Go to begin of next cycle
-    await chain.mineEmptyBlockUntil(21 + 10);
-
-    call = await rewards.getRewardsCycle();
-    call.result.expectUint(1);
-
-    // Go to begin of next cycle
-    await chain.mineEmptyBlockUntil(21 + 13);
-
-    call = await rewards.getRewardsCycle();
-    call.result.expectUint(2);
-  },
-});
-
-Clarinet.test({
-  name: "rewards: pool owner share",
+  name: "rewards-v4: pool owner share",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -143,6 +284,7 @@ Clarinet.test({
     let coreV1 = new CoreV1(chain, deployer);
     let sBtcToken = new SBtcToken(chain, deployer);
     let stStxBtcToken = new StStxBtcToken(chain, deployer);
+    let stStxBtcTracking = new StStxBtcTracking(chain, deployer);
 
     let result = await sBtcToken.protocolMint(
       deployer,
@@ -159,16 +301,18 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     let call = await rewards.getCycleRewardsStStx(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-stx"].expectUintWithDecimals(0);
     call.result.expectTuple()["commission-stx"].expectUintWithDecimals(0);
     call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-commission-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-stx"].expectUintWithDecimals(0);
 
     call = await rewards.getCycleRewardsStStxBtc(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-sbtc"].expectUintWithDecimals(0);
     call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0);
     call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-commission-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-sbtc"].expectUintWithDecimals(0);
 
     result = dataPools.setPoolOwnerCommission(
       deployer,
@@ -211,21 +355,23 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0.05);
 
     call = await rewards.getCycleRewardsStStx(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-stx"].expectUintWithDecimals(100);
     call.result.expectTuple()["commission-stx"].expectUintWithDecimals(4.5);
     call.result.expectTuple()["protocol-stx"].expectUintWithDecimals(95);
+    call.result.expectTuple()["processed-commission-stx"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-stx"].expectUintWithDecimals(0);
 
     call = await rewards.getCycleRewardsStStxBtc(0);
-    call.result.expectTuple()["processed"].expectBool(false);
     call.result.expectTuple()["total-sbtc"].expectUintWithDecimals(10);
     call.result.expectTuple()["commission-sbtc"].expectUintWithDecimals(0.45);
     call.result.expectTuple()["protocol-sbtc"].expectUintWithDecimals(9.5);
+    call.result.expectTuple()["processed-commission-sbtc"].expectUintWithDecimals(0);
+    call.result.expectTuple()["processed-protocol-sbtc"].expectUintWithDecimals(0);
   },
 });
 
 Clarinet.test({
-  name: "rewards: get stx and sbtc",
+  name: "rewards-v4: get stx and sbtc",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -261,43 +407,34 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "rewards-v4: set rewards interval length",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let rewards = new Rewards(chain, deployer);
+
+    let result = await rewards.setRewardsIntervalLength(wallet_1, 3);
+    result.expectErr().expectUint(20003);
+
+    result = await rewards.setRewardsIntervalLength(deployer, 4);
+    result.expectErr().expectUint(203005);
+
+    result = await rewards.setRewardsIntervalLength(deployer, 3);
+    result.expectOk().expectBool(true);
+
+    let call = await rewards.getRewardsIntervalLength();
+    call.result.expectUint(3);
+  },
+});
+
 //-------------------------------------
 // Errors
 //-------------------------------------
 
 Clarinet.test({
-  name: "rewards: can only process rewards once, at end of cycle",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let rewards = new Rewards(chain, deployer);
-
-    let result = await rewards.addRewards(
-      deployer,
-      qualifiedName("stacking-pool-v1"),
-      100
-    );
-    result.expectOk().expectBool(true);
-
-    // Can not process rewards
-    result = await rewards.processRewards(deployer, 0);
-    result.expectErr().expectUint(203001);
-
-    // Go to end of cycle
-    await chain.mineEmptyBlockUntil(21 - 10 + 2);
-
-    // Can process rewards
-    result = await rewards.processRewards(deployer, 0);
-    result.expectOk().expectBool(true);
-
-    // Already processed
-    result = await rewards.processRewards(deployer, 0);
-    result.expectErr().expectUint(203002);
-  },
-});
-
-Clarinet.test({
-  name: "rewards: can not add rewards with wrong commission contracts",
+  name: "rewards-v4: can not add rewards with wrong commission contracts",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -344,7 +481,7 @@ Clarinet.test({
     // Can not add rewards if contracts are wrong
     let block = chain.mineBlock([
       Tx.contractCall(
-        "rewards-v3",
+        "rewards-v5",
         "process-rewards",
         [
           types.uint(0),
@@ -378,7 +515,7 @@ Clarinet.test({
     // Can get rewards
     block = chain.mineBlock([
       Tx.contractCall(
-        "rewards-v3",
+        "rewards-v5",
         "process-rewards",
         [
           types.uint(0),
@@ -390,7 +527,7 @@ Clarinet.test({
         deployer.address
       ),
     ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    block.receipts[0].result.expectOk().expectTuple();
   },
 });
 
@@ -399,7 +536,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "rewards: only protocol can get stx and sbtc",
+  name: "rewards-v4: only protocol can get stx and sbtc",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -415,7 +552,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "rewards: only protocol can set commission contracts",
+  name: "rewards-v4: only protocol can set commission contracts",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;

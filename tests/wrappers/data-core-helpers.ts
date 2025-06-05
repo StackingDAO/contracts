@@ -172,7 +172,7 @@ class DataCoreV2 {
 
   getStxPerStStx(reserveContract: string) {
     return this.chain.callReadOnlyFn(
-      "data-core-v2",
+      "data-core-v3",
       "get-stx-per-ststx",
       [types.principal(reserveContract)],
       this.deployer.address
@@ -181,7 +181,7 @@ class DataCoreV2 {
 
   getStxPerStStxHelper(amount: number) {
     return this.chain.callReadOnlyFn(
-      "data-core-v2",
+      "data-core-v3",
       "get-stx-per-ststx-helper",
       [types.uint(amount * 1000000)],
       this.deployer.address

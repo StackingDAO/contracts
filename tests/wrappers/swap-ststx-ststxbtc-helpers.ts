@@ -22,7 +22,7 @@ class SwapStStxBtc {
   swapStStxForStStxBtc(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "swap-ststx-ststxbtc-v1",
+        "swap-ststx-ststxbtc-v2",
         "swap-ststx-for-ststxbtc",
         [
           types.uint(amount * 1000000),
@@ -37,7 +37,7 @@ class SwapStStxBtc {
   swapStStxBtcForStStx(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "swap-ststx-ststxbtc-v1",
+        "swap-ststx-ststxbtc-v2",
         "swap-ststxbtc-for-ststx",
         [
           types.uint(amount * 1000000),

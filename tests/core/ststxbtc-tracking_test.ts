@@ -177,7 +177,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ststxbtc-tracking: refresh-wallet will claim rewards if any",
+  name: "ststxbtc-tracking: refresh-wallet will save rewards if any",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -244,17 +244,42 @@ Clarinet.test({
     ]);
     call.result.expectList()[0].expectOk().expectUintWithDecimals(0, 8);
     call.result.expectList()[1].expectOk().expectUintWithDecimals(100, 8);
-    call.result.expectList()[2].expectOk().expectUintWithDecimals(0, 8);
+    call.result.expectList()[2].expectOk().expectUintWithDecimals(200, 8);
+
+    call = await stStxBtcTracking.getSavedRewards(deployer.address, deployer.address);
+    call.result.expectUintWithDecimals(0, 8);
+    call = await stStxBtcTracking.getSavedRewards(wallet_1.address, wallet_1.address);
+    call.result.expectUintWithDecimals(0, 8);  
+    call = await stStxBtcTracking.getSavedRewards(wallet_2.address, wallet_2.address);
+    call.result.expectUintWithDecimals(200, 8);
 
     call = await sBtcToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(0, 8);
+    call = await sBtcToken.getBalance(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(0, 8);
+
+    // Claim
+    result = await stStxBtcTracking.claimPendingRewards(deployer, deployer.address, deployer.address);
+    result.expectOk().expectUintWithDecimals(0, 8);
+    result = await stStxBtcTracking.claimPendingRewards(wallet_1, wallet_1.address, wallet_1.address);
+    result.expectOk().expectUintWithDecimals(100, 8);
+    result = await stStxBtcTracking.claimPendingRewards(wallet_2, wallet_2.address, wallet_2.address);
+    result.expectOk().expectUintWithDecimals(200, 8);
+
+    call = await stStxBtcTracking.getSavedRewards(deployer.address, deployer.address);
+    call.result.expectUintWithDecimals(0, 8);
+    call = await stStxBtcTracking.getSavedRewards(wallet_1.address, wallet_1.address);
+    call.result.expectUintWithDecimals(0, 8);  
+
+    call = await sBtcToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(100, 8);
     call = await sBtcToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(200, 8);
   },
 });
 
 Clarinet.test({
-  name: "ststxbtc-tracking: refresh-position will claim rewards if any",
+  name: "ststxbtc-tracking: refresh-position will save rewards if any",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -339,8 +364,33 @@ Clarinet.test({
       { holder: wallet_1.address, position: qualifiedName("position-mock") },
       { holder: wallet_2.address, position: qualifiedName("position-mock") },
     ]);
-    call.result.expectList()[0].expectOk().expectUintWithDecimals(0, 8);
+    call.result.expectList()[0].expectOk().expectUintWithDecimals(300, 8);
     call.result.expectList()[1].expectOk().expectUintWithDecimals(0, 8);
+
+    call = await stStxBtcTracking.getSavedRewards(deployer.address, qualifiedName("position-mock"));
+    call.result.expectUintWithDecimals(0, 8);
+    call = await stStxBtcTracking.getSavedRewards(wallet_1.address, qualifiedName("position-mock"));
+    call.result.expectUintWithDecimals(300, 8);  
+    call = await stStxBtcTracking.getSavedRewards(wallet_2.address, qualifiedName("position-mock"));
+    call.result.expectUintWithDecimals(0, 8);
+
+    call = await sBtcToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(0, 8);
+    call = await sBtcToken.getBalance(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(0, 8);
+
+    // Claim
+    result = await stStxBtcTracking.claimPendingRewards(deployer, deployer.address, qualifiedName("position-mock"));
+    result.expectOk().expectUintWithDecimals(0, 8);
+    result = await stStxBtcTracking.claimPendingRewards(wallet_1, wallet_1.address, qualifiedName("position-mock"));
+    result.expectOk().expectUintWithDecimals(300, 8);
+    result = await stStxBtcTracking.claimPendingRewards(wallet_2, wallet_2.address, qualifiedName("position-mock"));
+    result.expectOk().expectUintWithDecimals(0, 8);
+
+    call = await stStxBtcTracking.getSavedRewards(deployer.address, qualifiedName("position-mock"));
+    call.result.expectUintWithDecimals(0, 8);
+    call = await stStxBtcTracking.getSavedRewards(wallet_1.address, qualifiedName("position-mock"));
+    call.result.expectUintWithDecimals(0, 8);  
 
     call = await sBtcToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(300, 8);
@@ -1117,7 +1167,7 @@ Clarinet.test({
     let call = await sBtcToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(300, 8);
 
-    call = await sBtcToken.getBalance(qualifiedName("ststxbtc-tracking"));
+    call = await sBtcToken.getBalance(qualifiedName("ststxbtc-tracking-v2"));
     call.result.expectOk().expectUintWithDecimals(0);
 
     result = await stStxBtcTracking.addRewards(deployer, 300);
@@ -1126,7 +1176,7 @@ Clarinet.test({
     call = await sBtcToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = await sBtcToken.getBalance(qualifiedName("ststxbtc-tracking"));
+    call = await sBtcToken.getBalance(qualifiedName("ststxbtc-tracking-v2"));
     call.result.expectOk().expectUintWithDecimals(300, 8);
 
     result = await stStxBtcTracking.withdrawTokens(
@@ -1139,7 +1189,7 @@ Clarinet.test({
     call = await sBtcToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(300, 8);
 
-    call = await sBtcToken.getBalance(qualifiedName("ststxbtc-tracking"));
+    call = await sBtcToken.getBalance(qualifiedName("ststxbtc-tracking-v2"));
     call.result.expectOk().expectUintWithDecimals(0);
   },
 });
@@ -1490,5 +1540,94 @@ Clarinet.test({
     call.result.expectList()[0].expectOk().expectUintWithDecimals(300, 8);
     call.result.expectList()[1].expectOk().expectUintWithDecimals(200, 8);
     call.result.expectList()[2].expectOk().expectUintWithDecimals(10, 8);
+  },
+});
+
+//-------------------------------------
+// Audit - Double rewards
+//-------------------------------------
+
+Clarinet.test({
+  name: "ststxbtc-tracking: correctly save rewards",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let stStxBtcToken = new StStxBtcToken(chain, deployer);
+    let stStxBtcTracking = new StStxBtcTracking(chain, deployer);
+    let sBtcToken = new SBtcToken(chain, deployer);
+
+    let result = await sBtcToken.protocolMint(
+      deployer,
+      100000,
+      deployer.address
+    );
+    result.expectOk().expectBool(true);
+
+    // Mint
+    result = await stStxBtcToken.mintForProtocol(
+      deployer,
+      1000,
+      wallet_1.address
+    );
+    result.expectOk().expectBool(true);
+
+    result = await stStxBtcToken.mintForProtocol(
+      deployer,
+      2000,
+      wallet_2.address
+    );
+    result.expectOk().expectBool(true);
+
+    // Add rewards
+    result = await stStxBtcTracking.addRewards(deployer, 300);
+    result.expectOk().expectBool(true);
+
+    let call = stStxBtcTracking.getPendingRewards(wallet_1.address, wallet_1.address)
+    call.result.expectOk().expectUintWithDecimals(100, 8);
+
+    result = await stStxBtcTracking.savePendingRewards(deployer, wallet_1.address, wallet_1.address);
+    result.expectOk().expectUintWithDecimals(100, 8);
+
+    call = stStxBtcTracking.getPendingRewards(wallet_1.address, wallet_1.address)
+    call.result.expectOk().expectUintWithDecimals(100, 8);
+
+    call = stStxBtcTracking.getSavedRewards(wallet_1.address, wallet_1.address);
+    call.result.expectUintWithDecimals(100, 8);
+
+    result = await stStxBtcTracking.savePendingRewards(deployer, wallet_1.address, wallet_1.address);
+    result.expectOk().expectUintWithDecimals(0, 8);
+
+    call = stStxBtcTracking.getPendingRewards(wallet_1.address, wallet_1.address)
+    call.result.expectOk().expectUintWithDecimals(100, 8)
+
+    call = stStxBtcTracking.getSavedRewards(wallet_1.address, wallet_1.address);
+    call.result.expectUintWithDecimals(100, 8);
+
+     // Add rewards
+     result = await stStxBtcTracking.addRewards(deployer, 600);
+     result.expectOk().expectBool(true);
+ 
+    call = stStxBtcTracking.getPendingRewards(wallet_1.address, wallet_1.address)
+     call.result.expectOk().expectUintWithDecimals(300, 8);
+ 
+     result = await stStxBtcTracking.savePendingRewards(deployer, wallet_1.address, wallet_1.address);
+     result.expectOk().expectUintWithDecimals(300, 8);
+ 
+     call = stStxBtcTracking.getPendingRewards(wallet_1.address, wallet_1.address)
+     call.result.expectOk().expectUintWithDecimals(300, 8);
+ 
+     call = stStxBtcTracking.getSavedRewards(wallet_1.address, wallet_1.address);
+     call.result.expectUintWithDecimals(300, 8);
+ 
+     result = await stStxBtcTracking.savePendingRewards(deployer, wallet_1.address, wallet_1.address);
+     result.expectOk().expectUintWithDecimals(0, 8);
+ 
+     call = stStxBtcTracking.getPendingRewards(wallet_1.address, wallet_1.address)
+     call.result.expectOk().expectUintWithDecimals(300, 8)
+ 
+     call = stStxBtcTracking.getSavedRewards(wallet_1.address, wallet_1.address);
+     call.result.expectUintWithDecimals(300, 8);
   },
 });

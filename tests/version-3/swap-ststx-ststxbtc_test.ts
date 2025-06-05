@@ -34,8 +34,6 @@ Clarinet.test({
     let stStxToken = new StStxToken(chain, deployer);
     let stStxBtcToken = new StStxBtcToken(chain, deployer);
 
-    let sBtcToken = new SBtcToken(chain, deployer);
-
     // Deposit and add rewards for stSTX
     let result = await core.deposit(wallet_1, 1000);
     result.expectOk().expectUintWithDecimals(1000);
@@ -148,7 +146,7 @@ Clarinet.test({
 
     let block = chain.mineBlock([
       Tx.contractCall(
-        "swap-ststx-ststxbtc-v1",
+        "swap-ststx-ststxbtc-v2",
         "swap-ststx-for-ststxbtc",
         [
           types.uint(100 * 1000000),
@@ -161,7 +159,7 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall(
-        "swap-ststx-ststxbtc-v1",
+        "swap-ststx-ststxbtc-v2",
         "swap-ststxbtc-for-ststx",
         [
           types.uint(100 * 1000000),

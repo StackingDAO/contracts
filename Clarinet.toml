@@ -105,6 +105,16 @@ path = "contracts/core/ststxbtc-tracking.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.ststxbtc-token-v2]
+path = "contracts/core/ststxbtc-token-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.ststxbtc-tracking-v2]
+path = "contracts/core/ststxbtc-tracking-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.ststxbtc-withdraw-nft]
 path = "contracts/core/ststxbtc-withdraw-nft.clar"
 clarity_version = 2
@@ -112,6 +122,11 @@ epoch = 2.4
 
 [contracts.ststxbtc-tracking-data]
 path = "contracts/core/ststxbtc-tracking-data.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.ststxbtc-tracking-data-v2]
+path = "contracts/core/ststxbtc-tracking-data-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -212,6 +227,12 @@ epoch = 2.4
 path = "contracts/helpers/cc-redemption-v1.clar"
 clarity_version = 2
 epoch = 2.4
+
+[contracts.ststxbtc-helper-v2]
+path = "contracts/helpers/ststxbtc-helper-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
 
 # TODO: need to upgrade Clarinet on CI to v2.11.2+
 # [contracts.block-info-velar-nakamoto-v1]
@@ -452,26 +473,6 @@ path = "contracts/version-2/protocol-bitflow-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.strategy-v3-pools-v1]
-path = "contracts/version-2/strategy-v3-pools-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.strategy-v3-delegates-v1]
-path = "contracts/version-2/strategy-v3-delegates-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.strategy-v3-algo-v1]
-path = "contracts/version-2/strategy-v3-algo-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.strategy-v3]
-path = "contracts/version-2/strategy-v3.clar"
-clarity_version = 2
-epoch = 2.4
-
 [contracts.delegates-handler-v1]
 path = "contracts/version-2/delegates-handler-v1.clar"
 clarity_version = 2
@@ -525,6 +526,8 @@ path = "contracts/version-3/data-core-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
+
+
 [contracts.stacking-dao-core-btc-v1]
 path = "contracts/version-3/stacking-dao-core-btc-v1.clar"
 clarity_version = 2
@@ -550,8 +553,48 @@ path = "contracts/version-3/rewards-v3.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.rewards-v4]
+path = "contracts/version-3/rewards-v4.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.commission-btc-v1]
 path = "contracts/version-3/commission-btc-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-btc-v2]
+path = "contracts/version-3/stacking-dao-core-btc-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.data-core-v3]
+path = "contracts/version-3/data-core-v3.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.swap-ststx-ststxbtc-v2]
+path = "contracts/version-3/swap-ststx-ststxbtc-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.rewards-v5]
+path = "contracts/version-3/rewards-v5.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-v5]
+path = "contracts/version-3/stacking-dao-core-v5.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.direct-helpers-v4]
+path = "contracts/version-3/direct-helpers-v4.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.ststxbtc-migration-v1]
+path = "contracts/version-3/ststxbtc-migration-v1.clar"
 clarity_version = 2
 epoch = 2.4
 

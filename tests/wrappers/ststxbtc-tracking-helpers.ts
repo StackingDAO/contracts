@@ -20,9 +20,18 @@ class StStxBtcTracking {
 
   getClaimsEnabled() {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking",
+      "ststxbtc-tracking-v2",
       "get-claims-enabled",
       [],
+      this.deployer.address
+    );
+  }
+
+  getSavedRewards(holder: string, position: string) {
+    return this.chain.callReadOnlyFn(
+      "ststxbtc-tracking-v2",
+      "get-saved-rewards",
+      [types.principal(holder), types.principal(position)],
       this.deployer.address
     );
   }
@@ -30,7 +39,7 @@ class StStxBtcTracking {
   refreshWallet(caller: Account, holder: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "refresh-wallet",
         [types.principal(holder), types.uint(amount)],
         caller.address
@@ -42,8 +51,21 @@ class StStxBtcTracking {
   refreshPosition(caller: Account, holder: string, position: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "refresh-position",
+        [types.principal(holder), types.principal(position)],
+        caller.address
+      ),
+    ]);
+    return block.receipts[0].result;
+  }
+
+
+  savePendingRewards(caller: Account, holder: string, position: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall(
+        "ststxbtc-tracking-v2",
+        "save-pending-rewards",
         [types.principal(holder), types.principal(position)],
         caller.address
       ),
@@ -54,7 +76,7 @@ class StStxBtcTracking {
   addRewards(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "add-rewards",
         [types.uint(amount * 100000000)],
         caller.address
@@ -65,7 +87,7 @@ class StStxBtcTracking {
 
   getPendingRewardsMany(holders: any[]) {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking",
+      "ststxbtc-tracking-v2",
       "get-pending-rewards-many",
       [
         types.list(
@@ -83,7 +105,7 @@ class StStxBtcTracking {
 
   getPendingRewards(holder: string, position: string) {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking",
+      "ststxbtc-tracking-v2",
       "get-pending-rewards",
       [types.principal(holder), types.principal(position)],
       this.deployer.address
@@ -93,7 +115,7 @@ class StStxBtcTracking {
   claimPendingRewardsMany(caller: Account, holders: any[]) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "claim-pending-rewards-many",
         [
           types.list(
@@ -114,7 +136,7 @@ class StStxBtcTracking {
   claimPendingRewards(caller: Account, holder: string, position: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "claim-pending-rewards",
         [types.principal(holder), types.principal(position)],
         caller.address
@@ -126,7 +148,7 @@ class StStxBtcTracking {
   withdrawTokens(caller: Account, recipient: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "withdraw-tokens",
         [types.principal(recipient), types.uint(amount * 100000000)],
         caller.address
@@ -138,7 +160,7 @@ class StStxBtcTracking {
   setClaimsEnabled(caller: Account, active: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "set-claims-enabled",
         [types.bool(active)],
         caller.address
@@ -155,7 +177,7 @@ class StStxBtcTracking {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking",
+        "ststxbtc-tracking-v2",
         "set-supported-positions",
         [
           types.principal(position),

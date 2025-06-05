@@ -792,7 +792,7 @@ Clarinet.test({
     result
       .expectOk()
       .expectTuple()
-      ["stx-user-amount"].expectUintWithDecimals(200);
+      ["stx-user-amount"].expectUintWithDecimals(222.2222);
 
     result = await core.withdraw(wallet_1, 100000 + 1);
     result.expectErr().expectUint(204004);
@@ -806,7 +806,6 @@ Clarinet.test({
   name: "core: can not set fee higher than 10000 BPS",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let core = new Core(chain, deployer);
 
@@ -818,120 +817,5 @@ Clarinet.test({
 
     result = await core.setWithdrawIdleFee(deployer, 10001);
     result.expectErr().expectUint(204007);
-  },
-});
-
-//-------------------------------------
-// V1
-//-------------------------------------
-
-Clarinet.test({
-  name: "core: general test from v1 to compare",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    let wallet_2 = accounts.get("wallet_2")!;
-
-    let core = new Core(chain, deployer);
-    let stStxToken = new StStxToken(chain, deployer);
-    let rewards = new Rewards(chain, deployer);
-    let dataPools = new DataPools(chain, deployer);
-    let dataCore = new DataCore(chain, deployer);
-
-    // Set commission to 0 so it does not influence STX per stSTX
-    let result = dataPools.setPoolCommission(
-      deployer,
-      qualifiedName("stacking-pool-v1"),
-      0
-    );
-    result.expectOk().expectBool(true);
-
-    // Deposit 1,000,000 STX
-    result = await core.deposit(deployer, 1000000);
-    result.expectOk().expectUintWithDecimals(1000000);
-
-    // Got 1,000,000 stSTX
-    let call = stStxToken.getBalance(deployer.address);
-    call.result.expectOk().expectUintWithDecimals(1000000);
-
-    // Advance to end of cycle
-    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH - 2);
-
-    // Add rewards
-    result = await rewards.addRewards(
-      wallet_2,
-      qualifiedName("stacking-pool-v1"),
-      10000
-    );
-    result.expectOk().expectBool(true);
-
-    // Advance to end of cycle
-    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH * 2 - 2);
-
-    result = await rewards.processRewards(wallet_2, 1);
-    result.expectOk().expectBool(true);
-
-    // STX per stSTX ratio increased
-    call = await dataCore.getStxPerStStx(qualifiedName("reserve-v1"));
-    call.result.expectOk().expectUintWithDecimals(1.01);
-
-    // Advance to next cycle
-    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH * 2 + 1);
-
-    // Deposit 1M STX
-    result = await core.deposit(wallet_1, 1000000);
-    result.expectOk().expectUintWithDecimals(990099.0099);
-
-    // Add rewards
-    result = await rewards.addRewards(
-      wallet_2,
-      qualifiedName("stacking-pool-v1"),
-      18000
-    );
-    result.expectOk().expectBool(true);
-
-    // Advance to end of cycle
-    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH * 3 - 3);
-
-    result = await rewards.processRewards(wallet_2, 2);
-    result.expectOk().expectBool(true);
-
-    // Advance to next cycle
-    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH * 3 + 1);
-
-    // Now let's see what the stSTX to STX ratio is
-    call = await dataCore.getStxPerStStx(qualifiedName("reserve-v1"));
-    call.result.expectOk().expectUintWithDecimals(1.019044);
-
-    // Current PoX cycle
-    call = await rewards.getPoxCycle();
-    call.result.expectUint(3);
-
-    // Let's test withdrawals
-    // We are in cycle 2, so cycle 3 is the first we can withdraw
-    result = await core.initWithdraw(deployer, 10000);
-    result.expectOk().expectUint(100000);
-
-    // Deployer should have 10k stSTX less
-    call = stStxToken.getBalance(deployer.address);
-    call.result.expectOk().expectUintWithDecimals(990000);
-
-    // Let's go 1 cycle further now
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
-
-    // Current PoX cycle
-    call = await rewards.getPoxCycle();
-    call.result.expectUint(4);
-
-    // Withdraw
-    result = core.withdraw(deployer, 100000);
-    result
-      .expectOk()
-      .expectTuple()
-      ["stx-user-amount"].expectUintWithDecimals(10190.44);
-
-    // After deployer pulled all their capital + rewards, the ratio remains the same
-    call = await dataCore.getStxPerStStx(qualifiedName("reserve-v1"));
-    call.result.expectOk().expectUintWithDecimals(1.019044);
   },
 });

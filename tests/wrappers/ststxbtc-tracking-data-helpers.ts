@@ -20,7 +20,7 @@ class StStxBtcTrackingData {
 
   getTotalSupply() {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking-data",
+      "ststxbtc-tracking-data-v2",
       "get-total-supply",
       [],
       this.deployer.address
@@ -29,7 +29,7 @@ class StStxBtcTrackingData {
 
   getNextHolderIndex() {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking-data",
+      "ststxbtc-tracking-data-v2",
       "get-next-holder-index",
       [],
       this.deployer.address
@@ -38,7 +38,7 @@ class StStxBtcTrackingData {
 
   getCummRewards() {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking-data",
+      "ststxbtc-tracking-data-v2",
       "get-cumm-reward",
       [],
       this.deployer.address
@@ -47,7 +47,7 @@ class StStxBtcTrackingData {
 
   getSupportedPositions(position: string) {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking-data",
+      "ststxbtc-tracking-data-v2",
       "get-supported-positions",
       [types.principal(position)],
       this.deployer.address
@@ -56,7 +56,7 @@ class StStxBtcTrackingData {
 
   getHoldersIndexToAddress(index: number) {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking-data",
+      "ststxbtc-tracking-data-v2",
       "get-holders-index-to-address",
       [types.uint(index)],
       this.deployer.address
@@ -65,7 +65,7 @@ class StStxBtcTrackingData {
 
   getHoldersAddressToIndex(holder: string) {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking-data",
+      "ststxbtc-tracking-data-v2",
       "get-holders-address-to-index",
       [types.principal(holder)],
       this.deployer.address
@@ -74,7 +74,7 @@ class StStxBtcTrackingData {
 
   getHolderPosition(holder: string, position: string) {
     return this.chain.callReadOnlyFn(
-      "ststxbtc-tracking-data",
+      "ststxbtc-tracking-data-v2",
       "get-holder-position",
       [types.principal(holder), types.principal(position)],
       this.deployer.address
@@ -84,7 +84,7 @@ class StStxBtcTrackingData {
   setTotalSupply(caller: Account, supply: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "set-total-supply",
         [types.uint(supply * 1000000)],
         caller.address
@@ -96,7 +96,7 @@ class StStxBtcTrackingData {
   setNextHolderIndex(caller: Account, index: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "set-next-holder-index",
         [types.uint(index)],
         caller.address
@@ -108,7 +108,7 @@ class StStxBtcTrackingData {
   setCummReward(caller: Account, index: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "set-cumm-reward",
         [types.uint(index)],
         caller.address
@@ -127,7 +127,7 @@ class StStxBtcTrackingData {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "set-supported-positions",
         [
           types.principal(position),
@@ -145,7 +145,7 @@ class StStxBtcTrackingData {
   setHoldersIndexToAddress(caller: Account, index: number, holder: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "set-holders-index-to-address",
         [types.uint(index), types.principal(holder)],
         caller.address
@@ -157,7 +157,7 @@ class StStxBtcTrackingData {
   setHoldersAddressToIndex(caller: Account, holder: string, index: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "set-holders-address-to-index",
         [types.principal(holder), types.uint(index)],
         caller.address
@@ -175,7 +175,7 @@ class StStxBtcTrackingData {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "set-holder-position",
         [
           types.principal(holder),
@@ -192,7 +192,7 @@ class StStxBtcTrackingData {
   addHolder(caller: Account, holder: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "add-holder",
         [types.principal(holder)],
         caller.address
@@ -204,7 +204,7 @@ class StStxBtcTrackingData {
   updateHolderPosition(caller: Account, holder: string, position: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "update-holder-position",
         [types.principal(holder), types.principal(position)],
         caller.address
@@ -221,7 +221,7 @@ class StStxBtcTrackingData {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "update-holder-position-amount",
         [
           types.principal(holder),
@@ -241,7 +241,7 @@ class StStxBtcTrackingData {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "ststxbtc-tracking-data",
+        "ststxbtc-tracking-data-v2",
         "update-supported-positions-total",
         [types.principal(position), types.uint(total * 1000000)],
         caller.address
