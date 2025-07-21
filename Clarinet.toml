@@ -223,16 +223,15 @@ path = "contracts/helpers/nft-trait.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.cc-redemption-v1]
-path = "contracts/helpers/cc-redemption-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
 [contracts.ststxbtc-helper-v2]
 path = "contracts/helpers/ststxbtc-helper-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.ststx-nft-helper-v1]
+path = "contracts/helpers/ststx-nft-helper-v1.clar"
+clarity_version = 2
+epoch = 2.4
 
 # TODO: need to upgrade Clarinet on CI to v2.11.2+
 # [contracts.block-info-velar-nakamoto-v1]
@@ -563,8 +562,8 @@ path = "contracts/version-3/commission-btc-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-dao-core-btc-v2]
-path = "contracts/version-3/stacking-dao-core-btc-v2.clar"
+[contracts.stacking-dao-core-btc-v3]
+path = "contracts/version-3/stacking-dao-core-btc-v3.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -583,8 +582,8 @@ path = "contracts/version-3/rewards-v5.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-dao-core-v5]
-path = "contracts/version-3/stacking-dao-core-v5.clar"
+[contracts.stacking-dao-core-v6]
+path = "contracts/version-3/stacking-dao-core-v6.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -729,4 +728,3 @@ epoch = 2.4
 path = "contracts/tests/position-mock.clar"
 clarity_version = 2
 epoch = 2.4
-

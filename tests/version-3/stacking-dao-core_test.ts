@@ -7,17 +7,79 @@ import {
 } from "https://deno.land/x/clarinet/index.ts";
 import {
   qualifiedName,
-  REWARD_CYCLE_LENGTH,
-  PREPARE_PHASE_LENGTH,
 } from "../wrappers/tests-utils.ts";
 
 import { Core, CoreV1 } from "../wrappers/stacking-dao-core-helpers.ts";
 import { DataCore, DataCoreV2 } from "../wrappers/data-core-helpers.ts";
 import { DataDirectStacking } from "../wrappers/data-direct-stacking-helpers.ts";
 import { Reserve } from "../wrappers/reserve-helpers.ts";
-import { StStxToken } from "../wrappers/ststx-token-helpers.ts";
-import { Rewards } from "../wrappers/rewards-helpers.ts";
-import { DataPools } from "../wrappers/data-pools-helpers.ts";
+
+//-------------------------------------
+// Ratio
+//-------------------------------------
+
+Clarinet.test({
+  name: "core: ratio changes while withdrawing",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let core = new Core(chain, deployer);
+    let dataCore = new DataCore(chain, deployer);
+    let reserve = new Reserve(chain, deployer);
+
+    // Make deposit
+    let result = await core.deposit(wallet_1, 1000, undefined, undefined);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Add STX to reserve (simulate rewards)
+    let call = await reserve.getTotalStx();
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    // Check initial ratio
+    call = await dataCore.getStxPerStStx(qualifiedName("reserve-v1"));
+    let initialRatio = call.result.expectOk().expectUintWithDecimals(1);
+
+    // Add more STX to reserve to change the ratio (simulate rewards)
+    let block = chain.mineBlock([
+      Tx.transferSTX(500 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    call = await reserve.getTotalStx();
+    call.result.expectOk().expectUintWithDecimals(1500);
+
+    // Check ratio after adding STX
+    call = await dataCore.getStxPerStStx(qualifiedName("reserve-v1"));
+    call.result.expectOk().expectUintWithDecimals(1.5);
+
+    // Init withdraw
+    result = await core.initWithdraw(wallet_1, 200);
+    result.expectOk().expectUint(100000);
+
+    // Check ratio during withdrawal (should remain the same as withdrawal is locked)
+    call = await dataCore.getStxPerStStx(qualifiedName("reserve-v1"));
+    call.result.expectOk().expectUintWithDecimals(1.5);
+
+    // Wait for withdrawal to be available
+    chain.mineEmptyBlockUntil(21 + 2 + 3);
+
+    // Withdraw
+    result = await core.withdraw(wallet_1, 100000);
+    result
+      .expectOk()
+      .expectTuple()
+      ["stx-user-amount"].expectUintWithDecimals(300); // 200 * 1.5 ratio
+
+    // Check ratio after withdrawal (should remain the same)
+    call = await dataCore.getStxPerStStx(qualifiedName("reserve-v1"));
+    call.result.expectOk().expectUintWithDecimals(1.5);
+
+    // Verify total STX decreased
+    call = await reserve.getTotalStx();
+    call.result.expectOk().expectUintWithDecimals(1200); // 1500 - 300
+  },
+});
 
 //-------------------------------------
 // Core
@@ -420,7 +482,7 @@ Clarinet.test({
     result
       .expectOk()
       .expectTuple()
-      ["stx-user-amount"].expectUintWithDecimals(10);
+      ["stx-user-amount"].expectUintWithDecimals(9.9);
   },
 });
 
@@ -792,7 +854,7 @@ Clarinet.test({
     result
       .expectOk()
       .expectTuple()
-      ["stx-user-amount"].expectUintWithDecimals(222.2222);
+      ["stx-user-amount"].expectUintWithDecimals(200);
 
     result = await core.withdraw(wallet_1, 100000 + 1);
     result.expectErr().expectUint(204004);

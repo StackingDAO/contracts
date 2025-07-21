@@ -35,7 +35,7 @@
 (define-data-var shutdown-withdraw-idle bool false)
 (define-data-var stack-fee uint u0) ;; in bps
 (define-data-var unstack-fee uint u0) ;; in bps
-(define-data-var withdraw-idle-fee uint u0) ;; in bps
+(define-data-var withdraw-idle-fee uint u100) ;; in bps
 
 ;;-------------------------------------
 ;; Getters 
@@ -236,7 +236,7 @@
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve lock-stx-for-withdrawal stx-amount)))
-    (try! (contract-call? .ststx-token transfer ststx-amount tx-sender (as-contract tx-sender) none))
+    (try! (contract-call? .ststx-token transfer ststx-amount sender (as-contract tx-sender) none))
     (try! (as-contract (contract-call? .ststx-withdraw-nft-v2 mint-for-protocol sender)))
 
     (print { action: "init-withdraw", data: { stacker: tx-sender, nft-id: nft-id, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })

@@ -177,11 +177,11 @@
   ;; Version 3 - stSTXbtc fix
   (map-set contracts { address: .ststxbtc-token-v2 } { active: true })
 
-  (map-set contracts { address: .stacking-dao-core-v5 } { active: true })
+  (map-set contracts { address: .stacking-dao-core-v6 } { active: true })
   (map-set contracts { address: .direct-helpers-v4 } { active: true })
 
   (map-set contracts { address: .ststxbtc-tracking-v2 } { active: true })
-  (map-set contracts { address: .stacking-dao-core-btc-v2 } { active: true })
+  (map-set contracts { address: .stacking-dao-core-btc-v3 } { active: true })
   (map-set contracts { address: .rewards-v5 } { active: true })
   (map-set contracts { address: .swap-ststx-ststxbtc-v2 } { active: true })
   (map-set contracts { address: .ststxbtc-migration-v1 } { active: true })

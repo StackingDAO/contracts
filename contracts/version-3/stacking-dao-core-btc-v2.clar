@@ -186,7 +186,7 @@
 )
 
 ;; Initiate withdrawal, given STX amount. Can update amount as long as cycle not started.
-;; The stSTXbtc tokens are transferred to this contract and are burned.
+;; The stSTXbtc tokens are transferred to this contract, and are burned on the actual withdrawal.
 ;; An NFT is minted for the user as a token representation of the withdrawal.
 (define-public (init-withdraw 
   (reserve <reserve-trait>) 
@@ -195,7 +195,7 @@
 )
   (let (
     (sender tx-sender)
-    (unlock-burn-height (unwrap-panic (contract-call? .stacking-dao-core-v4 get-withdraw-unlock-burn-height)))
+    (unlock-burn-height (unwrap-panic (contract-call? .stacking-dao-core-v6 get-withdraw-unlock-burn-height)))
 
     (nft-id (unwrap-panic (contract-call? .ststxbtc-withdraw-nft get-last-token-id)))
   )
@@ -208,9 +208,9 @@
     
     (try! (contract-call? direct-helpers subtract-direct-stacking tx-sender ststxbtc-amount))
 
-    ;; Burn stSTXbtc tokens
+    ;; Transfer stSTXbtc token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve lock-stx-for-withdrawal ststxbtc-amount)))
-    (try! (contract-call? .ststxbtc-token-v2 burn-for-protocol ststxbtc-amount sender))
+    (try! (contract-call? .ststxbtc-token-v2 transfer ststxbtc-amount tx-sender (as-contract tx-sender) none))
     (try! (as-contract (contract-call? .ststxbtc-withdraw-nft mint-for-protocol sender)))
 
     (print { action: "init-withdraw", data: { stacker: tx-sender, nft-id: nft-id, ststxbtc-amount: ststxbtc-amount, unlock-burn-height: unlock-burn-height, block-height: block-height } })
@@ -219,7 +219,7 @@
 )
 
 ;; Actual withdrawal for given NFT. 
-;; The NFT will be burned and the user will receive STX tokens.
+;; The NFT and stSTXbtc tokens will be burned and the user will receive STX tokens.
 (define-public (withdraw 
   (reserve <reserve-trait>)
   (commission-contract <commission-trait>) 
@@ -251,8 +251,9 @@
 
     (try! (contract-call? .data-core-v2 delete-ststxbtc-withdrawals-by-nft nft-id))
 
-    ;; STX to user
+    ;; STX to user, burn stSTXbtc
     (try! (as-contract (contract-call? reserve request-stx-for-withdrawal stx-user-amount receiver)))
+    (try! (contract-call? .ststxbtc-token-v2 burn-for-protocol (get stx-amount withdrawal-entry) (as-contract tx-sender)))
     (try! (as-contract (contract-call? .ststxbtc-withdraw-nft burn-for-protocol nft-id)))
 
     ;; Fee

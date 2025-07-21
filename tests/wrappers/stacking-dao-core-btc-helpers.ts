@@ -21,7 +21,7 @@ class CoreBtc {
 
   getShutdownDeposits() {
     return this.chain.callReadOnlyFn(
-      "stacking-dao-core-btc-v2",
+      "stacking-dao-core-btc-v3",
       "get-shutdown-deposits",
       [],
       this.deployer.address
@@ -30,7 +30,7 @@ class CoreBtc {
 
   getShutdownInitWithdraw() {
     return this.chain.callReadOnlyFn(
-      "stacking-dao-core-btc-v2",
+      "stacking-dao-core-btc-v3",
       "get-shutdown-init-withdraw",
       [],
       this.deployer.address
@@ -39,7 +39,7 @@ class CoreBtc {
 
   getShutdownWithdraw() {
     return this.chain.callReadOnlyFn(
-      "stacking-dao-core-btc-v2",
+      "stacking-dao-core-btc-v3",
       "get-shutdown-withdraw",
       [],
       this.deployer.address
@@ -48,7 +48,7 @@ class CoreBtc {
 
   getShutdownWithdrawIdle() {
     return this.chain.callReadOnlyFn(
-      "stacking-dao-core-btc-v2",
+      "stacking-dao-core-btc-v3",
       "get-shutdown-withdraw-idle",
       [],
       this.deployer.address
@@ -57,7 +57,7 @@ class CoreBtc {
 
   getIdleCycle() {
     return this.chain.callReadOnlyFn(
-      "stacking-dao-core-btc-v2",
+      "stacking-dao-core-btc-v3",
       "get-idle-cycle",
       [],
       this.deployer.address
@@ -77,7 +77,7 @@ class CoreBtc {
 
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "deposit",
         [
           types.principal(qualifiedName("reserve-v1")),
@@ -99,7 +99,7 @@ class CoreBtc {
   withdrawIdle(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "withdraw-idle",
         [
           types.principal(qualifiedName("reserve-v1")),
@@ -117,7 +117,7 @@ class CoreBtc {
   initWithdraw(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "init-withdraw",
         [
           types.principal(qualifiedName("reserve-v1")),
@@ -133,7 +133,7 @@ class CoreBtc {
   withdraw(caller: Account, nftId: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "withdraw",
         [
           types.principal(qualifiedName("reserve-v1")),
@@ -150,7 +150,7 @@ class CoreBtc {
   setShutdownDeposits(caller: Account, shutdown: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "set-shutdown-deposits",
         [types.bool(shutdown)],
         caller.address
@@ -162,7 +162,7 @@ class CoreBtc {
   setShutdownInitWithdraw(caller: Account, shutdown: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "set-shutdown-init-withdraw",
         [types.bool(shutdown)],
         caller.address
@@ -174,7 +174,7 @@ class CoreBtc {
   setShutdownWithdrawIdle(caller: Account, shutdown: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "set-shutdown-withdraw-idle",
         [types.bool(shutdown)],
         caller.address
@@ -186,7 +186,7 @@ class CoreBtc {
   setShutdownWithdraw(caller: Account, shutdown: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "set-shutdown-withdraw",
         [types.bool(shutdown)],
         caller.address
@@ -198,7 +198,7 @@ class CoreBtc {
   setStackFee(caller: Account, fee: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "set-stack-fee",
         [types.uint(fee)],
         caller.address
@@ -210,7 +210,7 @@ class CoreBtc {
   setUnstackFee(caller: Account, fee: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "set-unstack-fee",
         [types.uint(fee)],
         caller.address
@@ -222,7 +222,7 @@ class CoreBtc {
   setWithdrawIdleFee(caller: Account, fee: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall(
-        "stacking-dao-core-btc-v2",
+        "stacking-dao-core-btc-v3",
         "set-withdraw-idle-fee",
         [types.uint(fee)],
         caller.address

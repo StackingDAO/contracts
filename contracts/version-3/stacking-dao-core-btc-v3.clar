@@ -1,5 +1,5 @@
-;; @contract Core
-;; @version 5
+;; @contract Core BTC
+;; @version 2
 ;;
 ;; Core contract for the user to interact with (deposit, withdraw)
 
@@ -35,7 +35,7 @@
 (define-data-var shutdown-withdraw-idle bool false)
 (define-data-var stack-fee uint u0) ;; in bps
 (define-data-var unstack-fee uint u0) ;; in bps
-(define-data-var withdraw-idle-fee uint u0) ;; in bps
+(define-data-var withdraw-idle-fee uint u100) ;; in bps
 
 ;;-------------------------------------
 ;; Getters 
@@ -73,23 +73,6 @@
   (var-get withdraw-idle-fee)
 )
 
-(define-read-only (get-withdraw-unlock-burn-height)
-  (let (
-    (current-cycle (current-pox-reward-cycle))
-    (start-block-next-cycle (reward-cycle-to-burn-height (+ current-cycle u1)))
-    (withdraw-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
-    (withdraw-inset (contract-call? .data-core-v2 get-cycle-withdraw-inset))
-  )
-    (if (< burn-block-height (- start-block-next-cycle withdraw-offset))
-      ;; Can withdraw next cycle
-      (ok (+ withdraw-inset start-block-next-cycle))
-
-      ;; Withdraw cycle after next
-      (ok (+ withdraw-inset start-block-next-cycle (get-reward-cycle-length)))
-    )
-  )
-)
-
 (define-read-only (get-idle-cycle)
   (let (
     (current-cycle (current-pox-reward-cycle))
@@ -107,7 +90,7 @@
 ;; User  
 ;;-------------------------------------
 
-;; Deposit STX for stSTX
+;; Deposit STX for stSTXbtc
 (define-public (deposit 
   (reserve <reserve-trait>) 
   (commission-contract <commission-trait>) 
@@ -120,9 +103,6 @@
   (let (
     (stx-fee-amount (/ (* (get-stack-fee) stx-amount) DENOMINATOR_BPS))
     (stx-user-amount (- stx-amount stx-fee-amount))
-
-    (stx-ststx (try! (contract-call? .data-core-v3 get-stx-per-ststx reserve)))
-    (ststx-amount (/ (* stx-user-amount DENOMINATOR_6) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
@@ -130,15 +110,15 @@
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
     (try! (contract-call? .dao check-is-protocol (contract-of direct-helpers)))
 
-    (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (var-get commission-address) (contract-of commission-contract)) (err ERR_WRONG_COMMISSION))
+    (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (try! (contract-call? direct-helpers add-direct-stacking tx-sender pool stx-user-amount))
     (try! (contract-call? .data-core-v2 increase-stx-idle (unwrap-panic (get-idle-cycle)) stx-user-amount))
 
     ;; User
     (try! (stx-transfer? stx-user-amount tx-sender (contract-of reserve)))
-    (try! (contract-call? .ststx-token mint-for-protocol ststx-amount tx-sender))
+    (try! (contract-call? .ststxbtc-token-v2 mint-for-protocol stx-user-amount tx-sender))
 
     ;; Fee
     (if (> stx-fee-amount u0)
@@ -149,8 +129,8 @@
       u0
     )
 
-    (print { action: "deposit", data: { stacker: tx-sender, stx-amount: stx-amount, ststx-amount: ststx-amount, referrer: referrer, pool: pool, block-height: block-height } })
-    (ok ststx-amount)
+    (print { action: "deposit", data: { stacker: tx-sender, stx-amount: stx-amount, stx-user-amount: stx-user-amount, referrer: referrer, pool: pool, block-height: block-height } })
+    (ok stx-user-amount)
   )
 )
 
@@ -161,13 +141,10 @@
   (direct-helpers <direct-helpers-trait>)
   (commission-contract <commission-trait>) 
   (staking-contract <staking-trait>) 
-  (ststx-amount uint)
+  (stx-amount uint)
 )
   (let (
     (receiver tx-sender)
-
-    (stx-ststx (try! (contract-call? .data-core-v3 get-stx-per-ststx reserve)))
-    (stx-amount (/ (* ststx-amount stx-ststx) DENOMINATOR_6))
 
     (stx-fee-amount (/ (* (get-withdraw-idle-fee) stx-amount) DENOMINATOR_BPS))
     (stx-user-amount (- stx-amount stx-fee-amount))
@@ -181,17 +158,17 @@
     (try! (contract-call? .dao check-is-protocol (contract-of commission-contract)))
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
 
+    (asserts! (is-eq (var-get commission-address) (contract-of commission-contract)) (err ERR_WRONG_COMMISSION))
     (asserts! (not (get-shutdown-withdraw-idle)) (err ERR_SHUTDOWN))
     (asserts! (>= current-idle-stx stx-amount) (err ERR_INSUFFICIENT_IDLE))
-    (asserts! (is-eq (var-get commission-address) (contract-of commission-contract)) (err ERR_WRONG_COMMISSION))
 
     (try! (contract-call? .data-core-v2 decrease-stx-idle idle-cycle stx-amount))
     (try! (contract-call? direct-helpers subtract-direct-stacking tx-sender stx-amount))
 
-    ;; STX to user, burn stSTX
+    ;; STX to user, burn stSTXbtc
     (try! (as-contract (contract-call? reserve lock-stx-for-withdrawal stx-user-amount)))
     (try! (as-contract (contract-call? reserve request-stx-for-withdrawal stx-user-amount receiver)))
-    (try! (contract-call? .ststx-token burn-for-protocol ststx-amount receiver))
+    (try! (contract-call? .ststxbtc-token-v2 burn-for-protocol stx-amount receiver))
 
     ;; Fee
     (if (> stx-fee-amount u0)
@@ -203,49 +180,46 @@
       u0
     )
 
-    (print { action: "withdraw-idle", data: { stacker: tx-sender, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
+    (print { action: "withdraw-idle", data: { stacker: tx-sender, stx-amount: stx-amount, block-height: block-height } })
     (ok { stx-user-amount: stx-user-amount, stx-fee-amount: stx-fee-amount})
   )
 )
 
-;; Initiate withdrawal, given stSTX amount. Can update amount as long as cycle not started.
-;; The stSTX tokens are transferred to this contract, and are burned on the actual withdrawal.
+;; Initiate withdrawal, given STX amount. Can update amount as long as cycle not started.
+;; The stSTXbtc tokens are transferred to this contract, and are burned on the actual withdrawal.
 ;; An NFT is minted for the user as a token representation of the withdrawal.
 (define-public (init-withdraw 
   (reserve <reserve-trait>) 
   (direct-helpers <direct-helpers-trait>)
-  (ststx-amount uint)
+  (ststxbtc-amount uint)
 )
   (let (
     (sender tx-sender)
-    (unlock-burn-height (unwrap-panic (get-withdraw-unlock-burn-height)))
+    (unlock-burn-height (unwrap-panic (contract-call? .stacking-dao-core-v6 get-withdraw-unlock-burn-height)))
 
-    (stx-ststx (try! (contract-call? .data-core-v3 get-stx-per-ststx reserve)))
-    (stx-amount (/ (* ststx-amount stx-ststx) DENOMINATOR_6))
-
-    (nft-id (unwrap-panic (contract-call? .ststx-withdraw-nft-v2 get-last-token-id)))
+    (nft-id (unwrap-panic (contract-call? .ststxbtc-withdraw-nft get-last-token-id)))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (try! (contract-call? .dao check-is-protocol (contract-of direct-helpers)))
     (asserts! (not (get-shutdown-init-withdraw)) (err ERR_SHUTDOWN))
 
-    (try! (contract-call? .data-core-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
+    (try! (contract-call? .data-core-v2 set-ststxbtc-withdrawals-by-nft nft-id ststxbtc-amount unlock-burn-height))
     
-    (try! (contract-call? direct-helpers subtract-direct-stacking tx-sender stx-amount))
+    (try! (contract-call? direct-helpers subtract-direct-stacking tx-sender ststxbtc-amount))
 
-    ;; Transfer stSTX token to contract, only burn on actual withdraw
-    (try! (as-contract (contract-call? reserve lock-stx-for-withdrawal stx-amount)))
-    (try! (contract-call? .ststx-token transfer ststx-amount tx-sender (as-contract tx-sender) none))
-    (try! (as-contract (contract-call? .ststx-withdraw-nft-v2 mint-for-protocol sender)))
+    ;; Transfer stSTXbtc token to contract, only burn on actual withdraw
+    (try! (as-contract (contract-call? reserve lock-stx-for-withdrawal ststxbtc-amount)))
+    (try! (contract-call? .ststxbtc-token-v2 transfer ststxbtc-amount sender (as-contract tx-sender) none))
+    (try! (as-contract (contract-call? .ststxbtc-withdraw-nft mint-for-protocol sender)))
 
-    (print { action: "init-withdraw", data: { stacker: tx-sender, nft-id: nft-id, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
+    (print { action: "init-withdraw", data: { stacker: tx-sender, nft-id: nft-id, ststxbtc-amount: ststxbtc-amount, unlock-burn-height: unlock-burn-height, block-height: block-height } })
     (ok nft-id)
   )
 )
 
 ;; Actual withdrawal for given NFT. 
-;; The NFT and stSTX tokens will be burned and the user will receive STX tokens.
+;; The NFT and stSTXbtc tokens will be burned and the user will receive STX tokens.
 (define-public (withdraw 
   (reserve <reserve-trait>)
   (commission-contract <commission-trait>) 
@@ -255,12 +229,11 @@
   (let (
     (receiver tx-sender)
 
-    (withdrawal-entry (contract-call? .data-core-v1 get-withdrawals-by-nft nft-id))
+    (withdrawal-entry (contract-call? .data-core-v2 get-ststxbtc-withdrawals-by-nft nft-id))
     (unlock-burn-height (get unlock-burn-height withdrawal-entry))
     (stx-amount (get stx-amount withdrawal-entry))
-    (ststx-amount (get ststx-amount withdrawal-entry))
 
-    (nft-owner (unwrap! (contract-call? .ststx-withdraw-nft-v2 get-owner nft-id) (err ERR_GET_OWNER)))
+    (nft-owner (unwrap! (contract-call? .ststxbtc-withdraw-nft get-owner nft-id) (err ERR_GET_OWNER)))
 
     (stx-fee-amount (/ (* (get-unstack-fee) stx-amount) DENOMINATOR_BPS))
     (stx-user-amount (- stx-amount stx-fee-amount))
@@ -276,12 +249,12 @@
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (>= burn-block-height unlock-burn-height) (err ERR_WITHDRAW_LOCKED))
 
-    (try! (contract-call? .data-core-v1 delete-withdrawals-by-nft nft-id))
+    (try! (contract-call? .data-core-v2 delete-ststxbtc-withdrawals-by-nft nft-id))
 
-    ;; STX to user, burn stSTX
+    ;; STX to user, burn stSTXbtc
     (try! (as-contract (contract-call? reserve request-stx-for-withdrawal stx-user-amount receiver)))
-    (try! (contract-call? .ststx-token burn-for-protocol (get ststx-amount withdrawal-entry) (as-contract tx-sender)))
-    (try! (as-contract (contract-call? .ststx-withdraw-nft-v2 burn-for-protocol nft-id)))
+    (try! (contract-call? .ststxbtc-token-v2 burn-for-protocol (get stx-amount withdrawal-entry) (as-contract tx-sender)))
+    (try! (as-contract (contract-call? .ststxbtc-withdraw-nft burn-for-protocol nft-id)))
 
     ;; Fee
     (if (> stx-fee-amount u0)
@@ -292,7 +265,7 @@
       u0
     )
 
-    (print { action: "withdraw", data: { stacker: tx-sender, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
+    (print { action: "withdraw", data: { stacker: tx-sender, stx-user-amount: stx-user-amount, stx-amount: stx-amount, block-height: block-height } })
     (ok { stx-user-amount: stx-user-amount, stx-fee-amount: stx-fee-amount})
   )
 )
@@ -340,7 +313,7 @@
 (define-public (set-shutdown-withdraw-idle (shutdown bool))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    
+
     (var-set shutdown-withdraw-idle shutdown)
     (ok true)
   )
@@ -375,7 +348,6 @@
     (ok true)
   )
 )
-
 
 ;;-------------------------------------
 ;; PoX Helpers

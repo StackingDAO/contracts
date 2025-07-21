@@ -406,7 +406,7 @@ Clarinet.test({
     result
       .expectOk()
       .expectTuple()
-      ["stx-user-amount"].expectUintWithDecimals(10);
+      ["stx-user-amount"].expectUintWithDecimals(9.9);
   },
 });
 
