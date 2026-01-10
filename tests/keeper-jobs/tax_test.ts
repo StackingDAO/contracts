@@ -114,7 +114,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "tax: protocol can retreive tokens",
+  name: "tax: protocol can retrieve tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -139,11 +139,11 @@ Clarinet.test({
     call = sDaoToken.getBalance(qualifiedName("tax-v1"));
     call.result.expectOk().expectUintWithDecimals(100);
 
-    // Retreive tokens
-    result = await tax.retreiveStxTokens(deployer, 10, deployer.address);
+    // Retrieve tokens
+    result = await tax.retrieveStxTokens(deployer, 10, deployer.address);
     result.expectOk().expectUintWithDecimals(10);
 
-    result = await tax.retreiveTokens(deployer, "sdao-token", 10, deployer.address);
+    result = await tax.retrieveTokens(deployer, "sdao-token", 10, deployer.address);
     result.expectOk().expectUintWithDecimals(10);
 
     // Contract balances
@@ -190,17 +190,17 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "tax: only protocol can retreive tokens",
+  name: "tax: only protocol can retrieve tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
     let tax = new Tax(chain, deployer);
 
-    let result = await tax.retreiveStxTokens(wallet_1, 10, wallet_1.address);
+    let result = await tax.retrieveStxTokens(wallet_1, 10, wallet_1.address);
     result.expectErr().expectUint(20003);
 
-    result = await tax.retreiveTokens(wallet_1, "sdao-token", 10, wallet_1.address);
+    result = await tax.retrieveTokens(wallet_1, "sdao-token", 10, wallet_1.address);
     result.expectErr().expectUint(20003);
   }
 });

@@ -54,9 +54,9 @@ class Tax {
     return block.receipts[0].result;
   }
 
-  retreiveStxTokens(caller: Account, amount: number, receiver: string) {
+  retrieveStxTokens(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("tax-v1", "retreive-stx-tokens", [
+      Tx.contractCall("tax-v1", "retrieve-stx-tokens", [
         types.uint(amount * 1000000),
         types.principal(receiver)
       ], caller.address)
@@ -64,9 +64,9 @@ class Tax {
     return block.receipts[0].result;
   }
 
-  retreiveTokens(caller: Account, token: string, amount: number, receiver: string) {
+  retrieveTokens(caller: Account, token: string, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("tax-v1", "retreive-tokens", [
+      Tx.contractCall("tax-v1", "retrieve-tokens", [
         types.principal(qualifiedName(token)),
         types.uint(amount * 1000000),
         types.principal(receiver)

@@ -26,9 +26,9 @@ class RewardsJob {
     return block.receipts[0].result;
   }
 
-  retreiveStxTokens(caller: Account, amount: number, receiver: string) {
+  retrieveStxTokens(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("rewards-job-v1", "retreive-stx-tokens", [
+      Tx.contractCall("rewards-job-v1", "retrieve-stx-tokens", [
         types.uint(amount * 1000000),
         types.principal(receiver)
       ], caller.address)
