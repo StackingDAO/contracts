@@ -100,7 +100,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "rewards-job: protocol can retreive tokens",
+  name: "rewards-job: protocol can retrieve tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -117,8 +117,8 @@ Clarinet.test({
     let call = core.getStxBalance(qualifiedName("rewards-job-v1"));
     call.result.expectUintWithDecimals(100);
 
-    // Retreive tokens
-    let result = await rewardsJob.retreiveStxTokens(deployer, 10, deployer.address);
+    // Retrieve tokens
+    let result = await rewardsJob.retrieveStxTokens(deployer, 10, deployer.address);
     result.expectOk().expectUintWithDecimals(10);
 
     // Contract balances
@@ -133,14 +133,14 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "rewards-job: only protocol can retreive tokens",
+  name: "rewards-job: only protocol can retrieve tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
     let rewardsJob = new RewardsJob(chain, deployer);
 
-    let result = await rewardsJob.retreiveStxTokens(wallet_1, 10, wallet_1.address);
+    let result = await rewardsJob.retrieveStxTokens(wallet_1, 10, wallet_1.address);
     result.expectErr().expectUint(20003);
   }
 });

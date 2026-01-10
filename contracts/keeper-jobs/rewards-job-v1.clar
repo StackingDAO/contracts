@@ -53,7 +53,7 @@
 ;; Admin 
 ;;-------------------------------------
 
-(define-public (retreive-stx-tokens (requested-stx uint) (receiver principal))
+(define-public (retrieve-stx-tokens (requested-stx uint) (receiver principal))
   (begin
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
