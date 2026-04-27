@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "hirosystems.clarity-lsp",
+    "denoland.vscode-deno",
+    "github.vscode-pull-request-github",
+    "ms-vscode.vscode-typescript-next",
+    "eamodio.gitlens"
+  ],
+  "unwantedRecommendations": []
+}

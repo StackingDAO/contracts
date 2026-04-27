@@ -1,5 +1,23 @@
-
 {
     "deno.enable": true,
-    "files.eol": "\n"
+    "files.eol": "\n",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "hirosystems.clarity-lsp",
+    "[clarity]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true
+    },
+    "files.associations": {
+        "*.clar": "clarity"
+    },
+    "files.exclude": {
+        "**/.cache": true,
+        "**/coverage": true,
+        "**/.DS_Store": true
+    },
+    "search.exclude": {
+        "**/.cache": true,
+        "**/coverage": true
+    }
 }
